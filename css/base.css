@@ -1,0 +1,94 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg-gradient-1);
+  color: var(--text-primary);
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── Animated background blobs ── */
+.bg-blobs {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  will-change: transform;
+}
+
+.blob--1 {
+  width: 50vmax;
+  height: 50vmax;
+  background: radial-gradient(circle, var(--accent-primary), transparent 70%);
+  top: -15%;
+  left: -10%;
+  animation: blobDrift1 18s ease-in-out infinite alternate;
+}
+
+.blob--2 {
+  width: 45vmax;
+  height: 45vmax;
+  background: radial-gradient(circle, var(--accent-secondary), transparent 70%);
+  bottom: -20%;
+  right: -15%;
+  animation: blobDrift2 22s ease-in-out infinite alternate;
+}
+
+.blob--3 {
+  width: 35vmax;
+  height: 35vmax;
+  background: radial-gradient(circle, var(--accent-tertiary), transparent 70%);
+  top: 40%;
+  left: 50%;
+  animation: blobDrift3 25s ease-in-out infinite alternate;
+}
+
+@keyframes blobDrift1 {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(15vw, 20vh) scale(1.1); }
+  66%  { transform: translate(-5vw, 35vh) scale(0.95); }
+  100% { transform: translate(10vw, 10vh) scale(1.05); }
+}
+
+@keyframes blobDrift2 {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(-20vw, -15vh) scale(1.15); }
+  66%  { transform: translate(10vw, -25vh) scale(0.9); }
+  100% { transform: translate(-10vw, -5vh) scale(1.05); }
+}
+
+@keyframes blobDrift3 {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(-25vw, -10vh) scale(1.2); }
+  100% { transform: translate(15vw, 15vh) scale(0.85); }
+}
+
+/* ── Glass utility ── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass), var(--shadow-inset);
+}
+
+.glass--light {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-light);
+}
+
+.glass--widget {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-widget);
+  /* No backdrop-filter on widgets for performance */
+}

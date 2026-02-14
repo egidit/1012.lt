@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a0a1a">
+  <meta name="description" content="A satisfying playground of fidget toys, physics simulations, and generative art.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>1012.lt</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/widgets.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+  <!-- Animated gradient background -->
+  <div class="bg-blobs" aria-hidden="true">
+    <div class="blob blob--1"></div>
+    <div class="blob blob--2"></div>
+    <div class="blob blob--3"></div>
+  </div>
+
+  <!-- Swipeable pages -->
+  <main class="pages" id="pages">
+
+    <!-- Page 1: Fidget Mix -->
+    <section class="page" id="page-fidget" data-page="0">
+      <h2 class="page-title glass">Fidget Mix</h2>
+      <div class="widget widget--full glass--widget" id="w-spinner">
+        <span class="widget__label">Spinner</span>
+      </div>
+      <div class="widget glass--widget" id="w-toggle-1">
+        <span class="widget__label">Toggle</span>
+      </div>
+      <div class="widget glass--widget" id="w-toggle-2">
+        <span class="widget__label">Toggle</span>
+      </div>
+      <div class="widget widget--full glass--widget" id="w-slider">
+        <span class="widget__label">Slider</span>
+      </div>
+      <div class="widget widget--full widget--tall glass--widget" id="w-draggable" style="position:relative;">
+        <span class="widget__label">Drag</span>
+      </div>
+    </section>
+
+    <!-- Page 2: Squishy & Tappy -->
+    <section class="page" id="page-squishy" data-page="1">
+      <h2 class="page-title glass">Squishy & Tappy</h2>
+      <div class="widget widget--full widget--tall glass--widget" id="w-blob">
+        <span class="widget__label">Squish</span>
+      </div>
+      <div class="widget widget--full glass--widget" id="w-ripple">
+        <span class="widget__label">Tap Anywhere</span>
+      </div>
+      <div class="widget widget--full glass--widget" id="w-bubbles">
+        <span class="widget__label">Bubble Wrap</span>
+      </div>
+    </section>
+
+    <!-- Page 3: Physics Lab -->
+    <section class="page" id="page-physics" data-page="2">
+      <h2 class="page-title glass">Physics Lab</h2>
+      <div class="widget widget--full widget--tall glass--widget" id="w-bouncy">
+        <span class="widget__label">Tap to Spawn</span>
+      </div>
+      <div class="widget widget--full glass--widget" id="w-pendulum">
+        <span class="widget__label">Pendulum</span>
+      </div>
+      <div class="widget widget--full glass--widget" id="w-springs">
+        <span class="widget__label">Springs</span>
+      </div>
+    </section>
+
+    <!-- Page 4: Satisfying Controls -->
+    <section class="page" id="page-controls" data-page="3">
+      <h2 class="page-title glass">Satisfying Controls</h2>
+      <div class="widget glass--widget" id="w-knob-1">
+        <span class="widget__label">Knob</span>
+      </div>
+      <div class="widget glass--widget" id="w-knob-2">
+        <span class="widget__label">Knob</span>
+      </div>
+      <div class="widget widget--full glass--widget" id="w-snap-slider">
+        <span class="widget__label">Snap Slider</span>
+      </div>
+      <div class="widget glass--widget" id="w-btn-1">
+        <span class="widget__label">Press</span>
+      </div>
+      <div class="widget glass--widget" id="w-btn-2">
+        <span class="widget__label">Press</span>
+      </div>
+      <div class="widget glass--widget" id="w-btn-3">
+        <span class="widget__label">Press</span>
+      </div>
+      <div class="widget glass--widget" id="w-btn-4">
+        <span class="widget__label">Press</span>
+      </div>
+    </section>
+
+    <!-- Page 5: Art Canvas -->
+    <section class="page" id="page-art" data-page="4">
+      <h2 class="page-title glass">Art Canvas</h2>
+      <div class="widget widget--full glass--widget" id="w-particles" style="min-height:45dvh;">
+        <span class="widget__label">Touch & Hold</span>
+      </div>
+      <div class="widget widget--full glass--widget" id="w-drawing" style="min-height:40dvh;">
+        <span class="widget__label">Draw</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Navigation dock -->
+  <nav class="dock glass" id="dock" aria-label="Page navigation">
+    <button class="dock-dot active" data-page="0" aria-label="Fidget Mix"></button>
+    <button class="dock-dot" data-page="1" aria-label="Squishy & Tappy"></button>
+    <button class="dock-dot" data-page="2" aria-label="Physics Lab"></button>
+    <button class="dock-dot" data-page="3" aria-label="Satisfying Controls"></button>
+    <button class="dock-dot" data-page="4" aria-label="Art Canvas"></button>
+  </nav>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+:root {
+  /* Glass properties */
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-bg-hover: rgba(255, 255, 255, 0.1);
+  --glass-bg-active: rgba(255, 255, 255, 0.14);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-light: rgba(255, 255, 255, 0.2);
+  --glass-blur: 12px;
+  --glass-blur-heavy: 20px;
+
+  /* Background */
+  --bg-gradient-1: #0a0a1a;
+  --bg-gradient-2: #1a0a2e;
+  --bg-gradient-3: #0a1628;
+
+  /* Accent palette */
+  --accent-primary: #7c5bf5;
+  --accent-secondary: #f55b9a;
+  --accent-tertiary: #5bf5c8;
+  --accent-warm: #f5a85b;
+
+  /* Text */
+  --text-primary: rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-muted: rgba(255, 255, 255, 0.3);
+
+  /* Spacing */
+  --card-padding: 16px;
+  --card-radius: 24px;
+  --widget-radius: 16px;
+  --widget-radius-sm: 12px;
+  --gap: 14px;
+
+  /* Shadows */
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.37);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --shadow-widget: 0 4px 16px rgba(0, 0, 0, 0.25);
+
+  /* Transitions */
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* Dock */
+  --dock-height: 52px;
+}
