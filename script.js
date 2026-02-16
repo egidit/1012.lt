@@ -22,9 +22,7 @@
       'nav.cta': 'Gauti pasiūlymą',
       'mob.cta': 'Susisiekite',
       'hero.badge': 'Priimame naujus projektus',
-      'hero.t1': 'Svetainė, kuria',
-      'hero.t2': 'jūsų klientai',
-      'hero.t3': 'pasitikės.',
+      'hero.title': 'Svetainė, kuria klientai <span class="hero__accent">pasitikės.</span>',
       'hero.sub': 'Profesionalus verslo pristatymas internete. Daugiau užklausų, aiškesnis įvaizdis ir svetainė, kurią lengva valdyti pačiam.',
       'hero.cta1': 'Gauti pasiūlymą',
       'hero.cta2': 'Mūsų paslaugos',
@@ -51,7 +49,7 @@
       'process.s1.text': 'Susipažįstame su jūsų verslu ir tikslais. Išsiaiškinsime, ko tiksliai reikia svetainei ir kokį rezultatą norite pasiekti.',
       'process.s1.output': '→ aiškus planas',
       'process.s2.title': 'Dizainas',
-      'process.s2.text': 'Paruošiame svetainės dizainą — kaip ji atrodys ir kaip ja naudosis jūsų klientai. Rodome, derinome, tvirtiname kartu.',
+      'process.s2.text': 'Paruošiame svetainės dizainą — kaip ji atrodys ir kaip ja naudosis jūsų klientai. Rodome, deriname, tvirtiname kartu.',
       'process.s2.output': '→ patvirtintas dizainas',
       'process.s3.title': 'Kūrimas',
       'process.s3.text': 'Sukuriame svetainę — greitą, patogią ir veikiančią visuose įrenginiuose. Jūs matote eigą ir galite komentuoti kiekviename etape.',
@@ -86,8 +84,7 @@
       'project3.s2.val': 'Nr. 1',
       'project3.s2.label': 'Vilniaus NT paieška',
       'contact.label': 'Kontaktai',
-      'contact.title1': 'Pirmas žingsnis —',
-      'contact.title2': 'paprastas pokalbis.',
+      'contact.title': 'Pasikalbėkime.',
       'contact.text': 'Parašykite mums — atsakysime per 24 valandas. Papasakosime, kiek kainuos, kiek užtruks ir ką tiksliai gausite. Jokių įsipareigojimų.',
       'form.name.label': 'Vardas',
       'form.name.ph': 'Jūsų vardas',
@@ -114,9 +111,7 @@
       'nav.cta': 'Get a Quote',
       'mob.cta': 'Contact Us',
       'hero.badge': 'Accepting new projects',
-      'hero.t1': 'A website your',
-      'hero.t2': 'customers will',
-      'hero.t3': 'trust.',
+      'hero.title': 'A website your customers <span class="hero__accent">will trust.</span>',
       'hero.sub': 'Professional business presence online. More inquiries, a clearer image, and a website that\'s easy to manage yourself.',
       'hero.cta1': 'Get a Quote',
       'hero.cta2': 'Our Services',
@@ -178,8 +173,7 @@
       'project3.s2.val': 'Nr. 1',
       'project3.s2.label': 'Vilnius RE search',
       'contact.label': 'Contact',
-      'contact.title1': 'First step —',
-      'contact.title2': 'a simple conversation.',
+      'contact.title': 'Let\u2019s talk.',
       'contact.text': 'Write to us — we\'ll respond within 24 hours. We\'ll tell you how much it costs, how long it takes, and exactly what you\'ll get. No obligations.',
       'form.name.label': 'Name',
       'form.name.ph': 'Your name',
@@ -208,94 +202,6 @@
       const now = performance.now();
       if (now - last >= ms) { last = now; fn.apply(this, args); }
     };
-  }
-
-  /* ------------------------------------------------
-     1. Engineering grid background
-     Subtle dot grid with faint crosshair lines.
-     Technical, integrated, not decorative.
-  ------------------------------------------------ */
-  function initGrid() {
-    if (RM) return;
-
-    const canvas = document.getElementById('bg-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-
-    let w, h, dpr;
-    let scrollY = 0;
-    let targetScroll = 0;
-
-    const GRID_SIZE = 60;
-    const DOT_RADIUS = 0.6;
-
-    function resize() {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = window.innerWidth;
-      h = window.innerHeight;
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      canvas.style.width = w + 'px';
-      canvas.style.height = h + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    function draw() {
-      scrollY = lerp(scrollY, targetScroll, 0.06);
-      ctx.clearRect(0, 0, w, h);
-
-      const offsetY = -(scrollY * 0.15) % GRID_SIZE;
-      const cols = Math.ceil(w / GRID_SIZE) + 1;
-      const rows = Math.ceil(h / GRID_SIZE) + 2;
-
-      // Dot grid
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const x = c * GRID_SIZE;
-          const y = r * GRID_SIZE + offsetY;
-
-          // Subtle distance-based fade from center
-          const cx = w / 2;
-          const cy = h / 2;
-          const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
-          const maxDist = Math.sqrt(cx ** 2 + cy ** 2);
-          const fade = 1 - (dist / maxDist) * 0.6;
-
-          ctx.beginPath();
-          ctx.arc(x, y, DOT_RADIUS, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(129,140,248,${0.12 * fade})`;
-          ctx.fill();
-        }
-      }
-
-      // Faint crosshair lines at center
-      const centerX = Math.round(w / 2);
-      const centerY = Math.round(h / 2);
-
-      ctx.beginPath();
-      ctx.moveTo(centerX, 0);
-      ctx.lineTo(centerX, h);
-      ctx.strokeStyle = 'rgba(129,140,248,0.025)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(0, centerY);
-      ctx.lineTo(w, centerY);
-      ctx.strokeStyle = 'rgba(129,140,248,0.025)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      requestAnimationFrame(draw);
-    }
-
-    window.addEventListener('resize', resize);
-    window.addEventListener('scroll', throttle(() => {
-      targetScroll = window.scrollY;
-    }, 16), { passive: true });
-
-    resize();
-    draw();
   }
 
   /* ------------------------------------------------
@@ -625,7 +531,6 @@
      Boot
   ------------------------------------------------ */
   function init() {
-    initGrid();
     initPrecisionLine();
     initReveal();
     initNav();

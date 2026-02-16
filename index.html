@@ -12,10 +12,12 @@
 </head>
 <body>
 
-  <!-- Engineering grid background -->
+  <!-- Background -->
   <div class="bg" aria-hidden="true">
-    <canvas id="bg-canvas"></canvas>
+    <div class="bg-glow"></div>
+    <div class="bg-grid"></div>
     <div class="bg-noise"></div>
+    <div class="bg-vignette"></div>
   </div>
 
   <!-- Precision line — signature element -->
@@ -71,11 +73,7 @@
           <span class="hero__badge-dot"></span>
           <span class="mono-sm" data-i18n="hero.badge">Priimame naujus projektus</span>
         </div>
-        <h1 class="hero__title">
-          <span class="anim" data-anim="up" style="--d:.05s" data-i18n="hero.t1">Svetainė, kuria</span>
-          <span class="anim" data-anim="up" style="--d:.12s" data-i18n="hero.t2">jūsų klientai</span>
-          <span class="hero__accent anim" data-anim="up" style="--d:.19s" data-i18n="hero.t3">pasitikės.</span>
-        </h1>
+        <h1 class="hero__title anim" data-anim="up" style="--d:.05s" data-i18n-html="hero.title">Svetainė, kuria klientai <span class="hero__accent">pasitikės.</span></h1>
         <p class="hero__sub anim" data-anim="up" style="--d:.32s" data-i18n="hero.sub">
           Profesionalus verslo pristatymas internete. Daugiau užklausų, aiškesnis įvaizdis ir svetainė, kurią lengva valdyti pačiam.
         </p>
@@ -175,7 +173,7 @@
             <div class="process__num mono">02</div>
             <div class="process__content">
               <h3 class="process__title" data-i18n="process.s2.title">Dizainas</h3>
-              <p class="process__text" data-i18n="process.s2.text">Paruošiame svetainės dizainą — kaip ji atrodys ir kaip ja naudosis jūsų klientai. Rodome, derinome, tvirtiname kartu.</p>
+              <p class="process__text" data-i18n="process.s2.text">Paruošiame svetainės dizainą — kaip ji atrodys ir kaip ja naudosis jūsų klientai. Rodome, deriname, tvirtiname kartu.</p>
             </div>
             <span class="process__output mono-sm" data-i18n="process.s2.output">→ patvirtintas dizainas</span>
           </div>
@@ -291,8 +289,7 @@
           <span class="section__num mono">04</span><span class="mono-sm" data-i18n="contact.label">Kontaktai</span>
         </div>
         <h2 class="cta__title anim" data-anim="up">
-          <span data-i18n="contact.title1">Pirmas žingsnis —</span><br>
-          <span class="cta__accent anim" data-anim="up" style="--d:.1s" data-i18n="contact.title2">paprastas pokalbis.</span>
+          <span class="cta__accent" data-i18n="contact.title">Pasikalbėkime.</span>
         </h2>
         <p class="cta__text anim" data-anim="up" style="--d:.22s" data-i18n="contact.text">
           Parašykite mums — atsakysime per 24 valandas. Papasakosime, kiek kainuos, kiek užtruks ir ką tiksliai gausite. Jokių įsipareigojimų.
@@ -338,7 +335,6 @@
           <div id="cf-status" class="contact-form__status" role="alert" aria-live="polite"></div>
         </form>
 
-        <a href="mailto:info@1012.lt" class="cta__email anim mono" data-anim="up" style="--d:.46s">info@1012.lt</a>
       </div>
     </section>
 
