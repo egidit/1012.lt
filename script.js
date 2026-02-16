@@ -1,17 +1,39 @@
 /* ============================================
-   1012.lt — Engineering Precision
-   Grid background, precision line,
-   scroll animations, micro-interactions
+   1012.lt v3 — Creative Reimagining Engine
+   WebGL fluid, GSAP cinematic animations,
+   horizontal scroll, split text, contact form
    ============================================ */
 
 ;(function () {
   'use strict';
 
+  /* ------------------------------------------------
+     Globals & helpers
+  ------------------------------------------------ */
   const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile = window.innerWidth < 768;
+  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+
+  function throttle(fn, ms) {
+    let last = 0;
+    return function (...args) {
+      const now = performance.now();
+      if (now - last >= ms) { last = now; fn.apply(this, args); }
+    };
+  }
+
+  function debounce(fn, ms) {
+    let timer;
+    return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), ms);
+    };
+  }
 
   /* ------------------------------------------------
-     Translations
+     Translations (PRESERVED — identical data)
   ------------------------------------------------ */
   const T = {
     lt: {
@@ -22,7 +44,7 @@
       'nav.cta': 'Gauti pasiūlymą',
       'mob.cta': 'Susisiekite',
       'hero.badge': 'Priimame naujus projektus',
-      'hero.title': 'Svetainė, kuria klientai <span class="hero__accent">pasitikės.</span>',
+      'hero.title': 'Svetainė, kuria klientai <span class="accent-text">pasitikės.</span>',
       'hero.sub': 'Profesionalus verslo pristatymas internete. Daugiau užklausų, aiškesnis įvaizdis ir svetainė, kurią lengva valdyti pačiam.',
       'hero.cta1': 'Gauti pasiūlymą',
       'hero.cta2': 'Mūsų paslaugos',
@@ -30,7 +52,7 @@
       'hero.m2.label': 'Metų patirtis',
       'hero.m3.label': 'Atsakymo laikas',
       'services.label': 'Paslaugos',
-      'services.title': 'Ką galime padaryti<br><span class="muted">jūsų verslui.</span>',
+      'services.title': 'Ką galime padaryti<br><span class="muted-text">jūsų verslui.</span>',
       'services.c1.label': 'svetainės',
       'services.c1.title': 'Verslo svetainės',
       'services.c1.text': 'Aiškus, profesionalus jūsų verslo pristatymas internete. Svetainė, kuri kelia pasitikėjimą ir skatina klientus kreiptis.',
@@ -44,7 +66,7 @@
       'services.c4.title': 'Esamos svetainės atnaujinimas',
       'services.c4.text': 'Jūsų dabartinė svetainė pasenusi ar lėta? Atnaujinsime dizainą, pagreitinsime ir pritaikysime šių dienų standartams.',
       'process.label': 'Procesas',
-      'process.title': 'Kaip viskas vyksta<br><span class="muted">nuo pradžios iki pabaigos.</span>',
+      'process.title': 'Kaip viskas vyksta<br><span class="muted-text">nuo pradžios iki pabaigos.</span>',
       'process.s1.title': 'Pokalbis',
       'process.s1.text': 'Susipažįstame su jūsų verslu ir tikslais. Išsiaiškinsime, ko tiksliai reikia svetainei ir kokį rezultatą norite pasiekti.',
       'process.s1.output': '→ aiškus planas',
@@ -61,7 +83,7 @@
       'process.s5.text': 'Nepaliekame jūsų vienų. Atnaujiname, prižiūrime, padedame, kai reikia. Jūsų svetainė visada veikia sklandžiai.',
       'process.s5.output': '→ rami galva',
       'projects.label': 'Projektai',
-      'projects.title': 'Rezultatai, kurie<br><span class="muted">kalba patys už save.</span>',
+      'projects.title': 'Rezultatai, kurie<br><span class="muted-text">kalba patys už save.</span>',
       'project1.tag': 'Verslo svetainė',
       'project1.title': 'NordTech Solutions',
       'project1.desc': 'Technologijų įmonei reikėjo svetainės, kuri aiškiai pristatytų paslaugas ir atvestų naujų klientų. Sukūrėme nuo nulio — su patogia kontaktų forma ir aiškia struktūra.',
@@ -111,7 +133,7 @@
       'nav.cta': 'Get a Quote',
       'mob.cta': 'Contact Us',
       'hero.badge': 'Accepting new projects',
-      'hero.title': 'A website your customers <span class="hero__accent">will trust.</span>',
+      'hero.title': 'A website your customers <span class="accent-text">will trust.</span>',
       'hero.sub': 'Professional business presence online. More inquiries, a clearer image, and a website that\'s easy to manage yourself.',
       'hero.cta1': 'Get a Quote',
       'hero.cta2': 'Our Services',
@@ -119,7 +141,7 @@
       'hero.m2.label': 'Years of experience',
       'hero.m3.label': 'Response time',
       'services.label': 'Services',
-      'services.title': 'What we can do<br><span class="muted">for your business.</span>',
+      'services.title': 'What we can do<br><span class="muted-text">for your business.</span>',
       'services.c1.label': 'websites',
       'services.c1.title': 'Business Websites',
       'services.c1.text': 'A clear, professional presentation of your business online. A website that builds trust and encourages customers to reach out.',
@@ -133,7 +155,7 @@
       'services.c4.title': 'Website Redesign',
       'services.c4.text': 'Is your current website outdated or slow? We\'ll refresh the design, speed it up, and bring it to modern standards.',
       'process.label': 'Process',
-      'process.title': 'How it all works<br><span class="muted">from start to finish.</span>',
+      'process.title': 'How it all works<br><span class="muted-text">from start to finish.</span>',
       'process.s1.title': 'Conversation',
       'process.s1.text': 'We get to know your business and goals. We\'ll figure out exactly what the website needs and what result you want to achieve.',
       'process.s1.output': '→ clear plan',
@@ -150,7 +172,7 @@
       'process.s5.text': 'We don\'t leave you alone. We update, maintain, and help when needed. Your website always runs smoothly.',
       'process.s5.output': '→ peace of mind',
       'projects.label': 'Projects',
-      'projects.title': 'Results that<br><span class="muted">speak for themselves.</span>',
+      'projects.title': 'Results that<br><span class="muted-text">speak for themselves.</span>',
       'project1.tag': 'Business Website',
       'project1.title': 'NordTech Solutions',
       'project1.desc': 'A tech company needed a website that clearly presented services and brought new clients. We built from scratch — with a convenient contact form and clear structure.',
@@ -196,72 +218,660 @@
 
   let currentLang = localStorage.getItem('lang') || 'lt';
 
-  function throttle(fn, ms) {
-    let last = 0;
-    return function (...args) {
-      const now = performance.now();
-      if (now - last >= ms) { last = now; fn.apply(this, args); }
-    };
-  }
-
   /* ------------------------------------------------
-     2. Precision line — scroll progress indicator
-     Thin accent line on the left that fills as you
-     scroll. Engineering measurement feel.
+     1. WebGL Fluid Background (Canvas 2D fallback)
+     Organic morphing gradient blobs that respond
+     to mouse position and scroll velocity
   ------------------------------------------------ */
-  function initPrecisionLine() {
-    if (RM || window.innerWidth < 768) return;
+  function initFluid() {
+    if (RM) return;
 
-    const head = document.querySelector('.precision-line__head');
-    if (!head) return;
+    const canvas = document.getElementById('fluid-canvas');
+    if (!canvas) return;
 
-    let current = 0;
-    let target = 0;
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    let mouse = { x: 0.5, y: 0.5 };
+    let mouseTarget = { x: 0.5, y: 0.5 };
+    let scrollVelocity = 0;
+    let lastScrollY = 0;
+    let frame = 0;
 
-    function update() {
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      target = maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
-      current = lerp(current, target, 0.08);
-      head.style.height = current + '%';
-      requestAnimationFrame(update);
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio, 1.5);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.scale(dpr, dpr);
     }
 
-    update();
-  }
+    resize();
+    window.addEventListener('resize', debounce(resize, 200));
 
-  /* ------------------------------------------------
-     3. Scroll reveal (Intersection Observer)
-  ------------------------------------------------ */
-  function initReveal() {
-    const els = document.querySelectorAll('.anim');
-    if (!els.length) return;
+    if (!isTouch) {
+      window.addEventListener('mousemove', (e) => {
+        mouseTarget.x = e.clientX / w;
+        mouseTarget.y = e.clientY / h;
+      }, { passive: true });
+    }
 
-    if (RM) { els.forEach(el => el.classList.add('show')); return; }
+    window.addEventListener('scroll', () => {
+      const sy = window.scrollY;
+      scrollVelocity = Math.abs(sy - lastScrollY);
+      lastScrollY = sy;
+    }, { passive: true });
 
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          e.target.classList.add('show');
-          obs.unobserve(e.target);
-        }
+    // Blob configuration
+    const blobs = [
+      { x: 0.3, y: 0.3, r: 0.35, hue: 75, sat: 100, light: 50, speed: 0.0003 },
+      { x: 0.7, y: 0.6, r: 0.3, hue: 200, sat: 60, light: 30, speed: 0.0005 },
+      { x: 0.5, y: 0.8, r: 0.25, hue: 270, sat: 40, light: 20, speed: 0.0004 },
+    ];
+
+    function draw() {
+      frame++;
+      mouse.x = lerp(mouse.x, mouseTarget.x, 0.03);
+      mouse.y = lerp(mouse.y, mouseTarget.y, 0.03);
+      scrollVelocity *= 0.95;
+
+      ctx.clearRect(0, 0, w, h);
+
+      blobs.forEach((blob, i) => {
+        const t = frame * blob.speed;
+        const offsetX = Math.sin(t + i * 2) * 0.15;
+        const offsetY = Math.cos(t + i * 1.5) * 0.1;
+        const mouseInfluence = 0.05;
+        const bx = (blob.x + offsetX + (mouse.x - 0.5) * mouseInfluence) * w;
+        const by = (blob.y + offsetY + (mouse.y - 0.5) * mouseInfluence) * h;
+        const br = blob.r * Math.min(w, h) * (1 + scrollVelocity * 0.002);
+
+        const gradient = ctx.createRadialGradient(bx, by, 0, bx, by, br);
+        gradient.addColorStop(0, `hsla(${blob.hue}, ${blob.sat}%, ${blob.light}%, 0.15)`);
+        gradient.addColorStop(0.5, `hsla(${blob.hue}, ${blob.sat}%, ${blob.light}%, 0.05)`);
+        gradient.addColorStop(1, 'transparent');
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, w, h);
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
-    els.forEach(el => obs.observe(el));
+      requestAnimationFrame(draw);
+    }
+
+    draw();
   }
 
   /* ------------------------------------------------
-     4. Navigation
+     2. Text Splitting (Chars & Words)
+  ------------------------------------------------ */
+  function splitTextIntoChars(el) {
+    const text = el.textContent;
+    el.innerHTML = '';
+    el.setAttribute('aria-label', text);
+
+    for (let i = 0; i < text.length; i++) {
+      const span = document.createElement('span');
+      span.className = 'char';
+      span.textContent = text[i] === ' ' ? '\u00A0' : text[i];
+      span.setAttribute('aria-hidden', 'true');
+      el.appendChild(span);
+    }
+
+    return el.querySelectorAll('.char');
+  }
+
+  /*
+   * FIX (Critical Issue 1 — Initial Render Glitch):
+   *
+   * ROOT CAUSE: The original splitTextIntoWords split el.innerHTML by
+   * whitespace (html.split(/\s+/)), which fragmented HTML tags across
+   * word boundaries. For elements with data-i18n-html containing markup
+   * like '<span class="muted-text">jūsų verslui.</span>', the split
+   * produced tokens such as 'class="muted-text">jūsų' which rendered
+   * as literal text — displaying raw code fragments to the user.
+   *
+   * After a language switch, applyLang() replaced innerHTML with the
+   * clean dictionary string, overwriting the broken splits. This is why
+   * switching language and switching back "fixed" the display.
+   *
+   * FIX: Walk childNodes to preserve HTML element boundaries. Only
+   * actual text nodes are split into word spans; element nodes (<span>,
+   * <br>, etc.) are cloned intact with their children processed
+   * recursively. This prevents HTML tag content from leaking into
+   * visible text.
+   */
+  function splitTextIntoWords(el) {
+    const originalText = el.textContent;
+    const frag = document.createDocumentFragment();
+
+    function processNode(node, container) {
+      if (node.nodeType === 3) {
+        // Text node — split by whitespace, preserve spaces as text nodes
+        const parts = node.textContent.split(/(\s+)/);
+        parts.forEach(part => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) {
+            container.appendChild(document.createTextNode(part));
+          } else {
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.textContent = part;
+            span.style.display = 'inline-block';
+            span.setAttribute('aria-hidden', 'true');
+            container.appendChild(span);
+          }
+        });
+      } else if (node.nodeType === 1) {
+        if (node.tagName === 'BR') {
+          container.appendChild(node.cloneNode(true));
+        } else {
+          // Clone element wrapper, process children recursively
+          const clone = node.cloneNode(false);
+          node.childNodes.forEach(child => processNode(child, clone));
+          container.appendChild(clone);
+        }
+      }
+    }
+
+    el.childNodes.forEach(node => processNode(node, frag));
+    el.innerHTML = '';
+    el.setAttribute('aria-label', originalText);
+    el.appendChild(frag);
+
+    return el.querySelectorAll('.word');
+  }
+
+  /* ------------------------------------------------
+     0. Preloader — Logo Reveal
+     - CSS animations drive the entrance (starts instantly on page load)
+     - Hold while logo is fully visible
+     - Smooth fade-out → content appears
+     Content is hidden via .preloader-active CSS rules until
+     the exit completes, preventing any flash.
+  ------------------------------------------------ */
+  function initPreloader(onComplete) {
+    // Force scroll to top on every page refresh
+    window.scrollTo(0, 0);
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+    const preloader = document.getElementById('preloader');
+    if (!preloader) {
+      document.body.classList.remove('preloader-active');
+      onComplete();
+      return;
+    }
+
+    const chars = preloader.querySelectorAll('.preloader__char');
+    const line = preloader.querySelector('.preloader__line');
+
+    // Hide the accent line — not part of this animation
+    if (line) line.style.display = 'none';
+
+    // State flags
+    let assetsReady = document.readyState === 'complete';
+    let introComplete = false;
+    let exitStarted = false;
+
+    const SAFETY_TIMEOUT_MS = 8000;
+
+    // Track when all assets (images, fonts, etc.) finish loading
+    if (!assetsReady) {
+      window.addEventListener('load', function () {
+        assetsReady = true;
+        tryExit();
+      });
+    }
+    // Safety: don't wait forever for assets
+    setTimeout(function () { assetsReady = true; tryExit(); }, SAFETY_TIMEOUT_MS);
+
+    function tryExit() {
+      if (assetsReady && introComplete && !exitStarted) {
+        exitStarted = true;
+        runExit();
+      }
+    }
+
+    // --- Reduced motion fast-path ---
+    if (RM) {
+      chars.forEach(function (c) { c.style.animation = 'none'; c.style.transform = 'none'; c.style.opacity = '1'; });
+      setTimeout(function () {
+        if (preloader.parentNode) preloader.remove();
+        onComplete();
+        document.body.classList.remove('preloader-active');
+      }, 600);
+      return;
+    }
+
+    // --- INTRO ---
+    // CSS @keyframes handle the character entrance automatically (starts
+    // at page load, no JS dependency). We just wait for the animations
+    // to finish, then hold the logo visible before exiting.
+    function runIntro() {
+      // Last character animation: delay 0.53s + duration 0.8s = 1.33s
+      // Add a generous hold so the logo is clearly visible
+      var CSS_ANIM_TOTAL_MS = 1330;
+      var HOLD_MS = 800;
+
+      setTimeout(function () {
+        introComplete = true;
+        tryExit();
+      }, CSS_ANIM_TOTAL_MS + HOLD_MS);
+    }
+
+    // --- EXIT ANIMATION ---
+    // 1) Letters slide back down (reverse of entrance)
+    // 2) Black screen fades out to reveal site
+    function runExit() {
+      if (typeof gsap !== 'undefined') {
+        // Clear CSS animations so GSAP can take full control of transforms
+        chars.forEach(function (c) {
+          c.style.animation = 'none';
+          c.style.transform = 'translateY(0)';
+          c.style.opacity = '1';
+        });
+
+        var exitTl = gsap.timeline({
+          onComplete: function () {
+            if (preloader.parentNode) preloader.remove();
+          },
+        });
+
+        // Phase 1 — letters slide down behind masks (reverse of entrance)
+        exitTl.to(chars, {
+          y: '120%',
+          opacity: 0,
+          duration: 0.7,
+          stagger: { each: 0.06, from: 'end' },
+          ease: 'power3.in',
+        });
+
+        // Reveal site content underneath BEFORE fade begins
+        exitTl.call(function () {
+          onComplete();
+          document.body.classList.remove('preloader-active');
+        });
+
+        // Phase 2 — black background fades out to reveal site underneath
+        exitTl.to(preloader, {
+          opacity: 0,
+          duration: 0.6,
+          ease: 'power1.inOut',
+        });
+
+      } else {
+        // CSS transition fallback
+        preloader.style.transition = 'opacity 0.8s ease';
+        preloader.style.opacity = '0';
+        setTimeout(function () {
+          if (preloader.parentNode) preloader.remove();
+          onComplete();
+          document.body.classList.remove('preloader-active');
+        }, 850);
+      }
+    }
+
+    // Kick off the intro (just waits for CSS animations + hold)
+    runIntro();
+  }
+
+  /* ------------------------------------------------
+     3. Hero Cinematic Entrance
+  ------------------------------------------------ */
+  function initHeroAnimation() {
+    if (typeof gsap === 'undefined') return;
+
+    const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+
+    // Split headline into chars, grouped by words to preserve natural word-wrap
+    const headline = document.querySelector('.hero-headline__line');
+    if (headline) {
+      let fullChars = [];
+      const frag = document.createDocumentFragment();
+
+      function splitNodeIntoWordChars(node, container) {
+        if (node.nodeType === 3) {
+          // Text node — split by word boundaries, keep spaces between words
+          const words = node.textContent.split(/(\s+)/);
+          words.forEach(segment => {
+            if (!segment) return;
+            if (/^\s+$/.test(segment)) {
+              // Whitespace — add as plain text to allow natural line breaks
+              container.appendChild(document.createTextNode(segment));
+              return;
+            }
+            // Word — wrap in an inline-block span so it doesn't break mid-word
+            const wordSpan = document.createElement('span');
+            wordSpan.className = 'word';
+            wordSpan.style.display = 'inline-block';
+            wordSpan.style.whiteSpace = 'nowrap';
+            for (let i = 0; i < segment.length; i++) {
+              const ch = document.createElement('span');
+              ch.className = 'char';
+              ch.textContent = segment[i];
+              ch.style.display = 'inline-block';
+              ch.style.opacity = '0';
+              ch.style.transform = 'translateY(100%)';
+              wordSpan.appendChild(ch);
+              fullChars.push(ch);
+            }
+            container.appendChild(wordSpan);
+          });
+        } else if (node.nodeType === 1) {
+          // Element node (e.g. <span class="accent-text">)
+          const wrapper = node.cloneNode(false);
+          node.childNodes.forEach(child => splitNodeIntoWordChars(child, wrapper));
+          container.appendChild(wrapper);
+        }
+      }
+
+      Array.from(headline.childNodes).forEach(node => splitNodeIntoWordChars(node, frag));
+
+      headline.innerHTML = '';
+      headline.appendChild(frag);
+
+      // Text is now split into .char spans (each at opacity 0).
+      // Make the parent visible — individual chars control their own visibility.
+      headline.style.opacity = '1';
+
+      // Animate chars
+      tl.to(fullChars, {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        stagger: 0.02,
+        delay: 0.3,
+      });
+    }
+
+    // Badge
+    tl.to('.hero-badge', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+    }, '-=0.6');
+
+    // Subtitle
+    tl.to('.hero-sub', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+    }, '-=0.4');
+
+    // Actions
+    tl.to('.hero-actions', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+    }, '-=0.3');
+
+    // Stats
+    tl.to('.hero-stats', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+    }, '-=0.3');
+  }
+
+  /* ------------------------------------------------
+     4. Scroll-triggered Animations
+  ------------------------------------------------ */
+  function initScrollAnimations() {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Service rows — slide in from left with stagger
+    gsap.utils.toArray('.service-row').forEach((row, i) => {
+      gsap.to(row, {
+        opacity: 1,
+        x: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: row,
+          start: 'top 85%',
+          toggleActions: 'play none none none',
+        },
+        delay: i * 0.08,
+      });
+    });
+
+    // Section headlines — split and reveal
+    document.querySelectorAll('.section-headline').forEach(headline => {
+      const words = splitTextIntoWords(headline);
+      gsap.from(words, {
+        opacity: 0,
+        y: 40,
+        rotateX: -20,
+        duration: 0.7,
+        stagger: 0.06,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: headline,
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+        },
+      });
+    });
+
+    // Section eyebrows — fade in
+    gsap.utils.toArray('.section-eyebrow').forEach(el => {
+      gsap.from(el, {
+        opacity: 0,
+        y: 20,
+        duration: 0.6,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 88%',
+          toggleActions: 'play none none none',
+        },
+      });
+    });
+
+    // Project panels — rise up with parallax
+    gsap.utils.toArray('.project-panel').forEach((panel, i) => {
+      gsap.to(panel, {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: panel,
+          start: 'top 85%',
+          toggleActions: 'play none none none',
+        },
+        delay: i * 0.15,
+      });
+
+      // Internal parallax on gradient
+      const gradient = panel.querySelector('.project-panel__gradient');
+      if (gradient) {
+        gsap.fromTo(gradient, {
+          scale: 1.15,
+        }, {
+          scale: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: panel,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1,
+          },
+        });
+      }
+    });
+
+    // Contact headline — split chars
+    const contactHeadline = document.querySelector('.contact-headline span');
+    if (contactHeadline) {
+      const chars = splitTextIntoChars(contactHeadline);
+      gsap.from(chars, {
+        opacity: 0,
+        y: 80,
+        rotateX: -40,
+        duration: 1,
+        stagger: 0.03,
+        ease: 'expo.out',
+        scrollTrigger: {
+          trigger: contactHeadline,
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+        },
+      });
+    }
+
+    // Contact sub and form
+    gsap.to('.contact-sub', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '.contact-sub',
+        start: 'top 85%',
+        toggleActions: 'play none none none',
+      },
+    });
+
+    gsap.to('.cform', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '.cform',
+        start: 'top 85%',
+        toggleActions: 'play none none none',
+      },
+    });
+  }
+
+  /* ------------------------------------------------
+     5. Process Section — Draggable Horizontal Track
+  ------------------------------------------------ */
+  function initProcessDrag() {
+    const track = document.querySelector('.process-track');
+    if (!track) return;
+
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+    let hasMoved = false;
+
+    track.addEventListener('mousedown', (e) => {
+      isDown = true;
+      hasMoved = false;
+      track.classList.add('is-dragging');
+      startX = e.pageX - track.offsetLeft;
+      scrollLeft = track.scrollLeft;
+    });
+
+    track.addEventListener('mouseleave', () => {
+      isDown = false;
+      track.classList.remove('is-dragging');
+    });
+
+    track.addEventListener('mouseup', () => {
+      isDown = false;
+      track.classList.remove('is-dragging');
+    });
+
+    track.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      hasMoved = true;
+      const x = e.pageX - track.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      track.scrollLeft = scrollLeft - walk;
+    });
+
+    // Prevent text selection while dragging
+    track.addEventListener('selectstart', (e) => {
+      if (isDown) e.preventDefault();
+    });
+
+    // Prevent click on links/elements after drag
+    track.addEventListener('click', (e) => {
+      if (hasMoved) e.preventDefault();
+    });
+
+    // Arrow buttons
+    const prevBtn = document.querySelector('.process-nav__btn--prev');
+    const nextBtn = document.querySelector('.process-nav__btn--next');
+    const firstCard = track.querySelector('.process-card');
+    if (!firstCard) return;
+
+    function getScrollStep() {
+      return firstCard.offsetWidth + parseFloat(getComputedStyle(track.querySelector('.process-track__inner')).gap || 0);
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -getScrollStep(), behavior: 'smooth' });
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        track.scrollBy({ left: getScrollStep(), behavior: 'smooth' });
+      });
+    }
+  }
+
+  /* ------------------------------------------------
+     6. (Counters removed — values are static in HTML)
+  ------------------------------------------------ */
+
+  /* ------------------------------------------------
+     7. Scroll Progress Bar
+  ------------------------------------------------ */
+  function initScrollProgress() {
+    const fill = document.querySelector('.scroll-progress__fill');
+    if (!fill) return;
+
+    window.addEventListener('scroll', throttle(() => {
+      const scrollY = window.scrollY;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = maxScroll > 0 ? (scrollY / maxScroll) * 100 : 0;
+      fill.style.width = progress + '%';
+    }, 30), { passive: true });
+  }
+
+  /* ------------------------------------------------
+     8. Navigation
   ------------------------------------------------ */
   function initNav() {
-    const nav = document.querySelector('.nav');
-    const burger = document.querySelector('.nav__burger');
-    const menu = document.querySelector('.mob-menu');
-    const links = document.querySelectorAll('.mob-menu__link, .mob-menu__cta');
+    const nav = document.querySelector('.topbar');
+    const burger = document.querySelector('.topbar__burger');
+    const menu = document.querySelector('.mob-overlay');
+    const mobileLinks = document.querySelectorAll('.mob-overlay__link, .mob-overlay__cta');
+    const navLinks = document.querySelectorAll('.topbar__link');
+
+    let lastScroll = 0;
 
     // Scrolled state
     window.addEventListener('scroll', throttle(() => {
-      nav.classList.toggle('scrolled', window.scrollY > 40);
+      const scrollY = window.scrollY;
+
+      nav.classList.toggle('scrolled', scrollY > 60);
+      lastScroll = scrollY;
+
+      // Active link
+      const sections = ['paslaugos', 'procesas', 'projektai', 'kontaktai'];
+      let activeId = '';
+      sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top < window.innerHeight * 0.5) {
+          activeId = id;
+        }
+      });
+
+      navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        link.classList.toggle('is-active', href === '#' + activeId);
+      });
     }, 80), { passive: true });
 
     // Mobile menu
@@ -274,7 +884,7 @@
         document.body.style.overflow = open ? 'hidden' : '';
       });
 
-      links.forEach(link => {
+      mobileLinks.forEach(link => {
         link.addEventListener('click', () => {
           burger.classList.remove('open');
           menu.classList.remove('open');
@@ -287,7 +897,7 @@
   }
 
   /* ------------------------------------------------
-     5. Smooth anchor scroll
+     9. Smooth Anchor Scroll (GSAP)
   ------------------------------------------------ */
   function initSmooth() {
     document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -297,18 +907,20 @@
         const target = document.querySelector(id);
         if (target) {
           e.preventDefault();
-          const top = target.getBoundingClientRect().top + window.scrollY - 80;
-          window.scrollTo({ top, behavior: 'smooth' });
+          var top = target.getBoundingClientRect().top + window.scrollY - 80;
+          if (typeof gsap !== 'undefined') {
+            gsap.to(window, { scrollTo: top, duration: 0.45, ease: 'power2.out' });
+          } else {
+            window.scrollTo({ top: top, behavior: 'smooth' });
+          }
         }
       });
     });
   }
 
   /* ------------------------------------------------
-     6. Contact form submission
-        Adaptive CAPTCHA — Turnstile widget only
-        appears when the server flags the IP as
-        suspicious (rate-limited).
+     10. Contact form submission
+         SUPABASE INTEGRATION — PRESERVED EXACTLY
   ------------------------------------------------ */
   function initContactForm() {
     const SUPABASE_FUNCTION_URL =
@@ -326,28 +938,25 @@
     const captchaWrap  = document.getElementById('cf-captcha');
     const captchaBox   = document.getElementById('cf-captcha-widget');
 
-    // Adaptive CAPTCHA state
-    let captchaToken  = null;   // token from Turnstile after solve
-    let turnstileReady = false; // true once the Turnstile API JS is loaded
-    let widgetId       = null;  // Turnstile render handle
+    let captchaToken  = null;
+    let turnstileReady = false;
+    let widgetId       = null;
 
-    /* --- Status / error helpers --- */
     function setStatus(type, text) {
-      statusEl.className = 'contact-form__status';
+      statusEl.className = 'cform__status';
       if (type) {
         statusEl.classList.add('is-' + type);
         statusEl.textContent = text;
       }
     }
+
     function clearFieldErrors() {
       form.querySelectorAll('.is-error').forEach(el => el.classList.remove('is-error'));
     }
 
-    /* --- Turnstile lazy loader --- */
     function loadTurnstile() {
       return new Promise((resolve) => {
         if (turnstileReady) { resolve(); return; }
-        // Global callback invoked once the JS is parsed
         window.__onTurnstileLoad = () => { turnstileReady = true; resolve(); };
         const s = document.createElement('script');
         s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js'
@@ -357,7 +966,6 @@
       });
     }
 
-    /** Show the widget, wait for user to solve, then auto-resubmit. */
     async function showCaptcha(siteKey) {
       captchaWrap.hidden = false;
       captchaWrap.classList.add('is-visible');
@@ -365,7 +973,6 @@
       await loadTurnstile();
 
       if (widgetId !== null) {
-        // Widget already rendered — just reset it
         window.turnstile.reset(widgetId);
       } else {
         widgetId = window.turnstile.render(captchaBox, {
@@ -373,7 +980,6 @@
           theme: 'dark',
           callback: (token) => {
             captchaToken = token;
-            // Auto-resubmit with the fresh token
             form.requestSubmit();
           },
           'error-callback': () => {
@@ -388,13 +994,11 @@
       captchaWrap.classList.remove('is-visible');
     }
 
-    /* --- Submit handler --- */
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       clearFieldErrors();
       setStatus('', '');
 
-      // Client-side validation
       let valid = true;
       if (!nameInput.value.trim()) { nameInput.classList.add('is-error'); valid = false; }
       if (!emailInput.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim())) {
@@ -407,7 +1011,6 @@
         return;
       }
 
-      // Show loading state
       submitBtn.classList.add('is-loading');
 
       const payload = {
@@ -416,12 +1019,10 @@
         message: msgInput.value.trim(),
       };
 
-      // Honeypot (bots only)
       if (honeyInput && honeyInput.value) {
         payload._honey = honeyInput.value;
       }
 
-      // Attach CAPTCHA token if user already solved one
       if (captchaToken) {
         payload.captcha_token = captchaToken;
       }
@@ -435,10 +1036,9 @@
 
         const data = await res.json();
 
-        // ── Adaptive CAPTCHA trigger ──
         if (data.captcha_required) {
           submitBtn.classList.remove('is-loading');
-          captchaToken = null; // clear stale token
+          captchaToken = null;
           setStatus('error', T[currentLang]['form.captcha.required']
             || 'Prašome patvirtinti, kad nesate robotas.');
           showCaptcha(data.site_key);
@@ -460,7 +1060,6 @@
       }
     });
 
-    // Remove error highlight on input
     [nameInput, emailInput, msgInput].forEach(input => {
       input.addEventListener('input', () => {
         input.classList.remove('is-error');
@@ -469,7 +1068,7 @@
   }
 
   /* ------------------------------------------------
-     7. Language switcher
+     11. Language Switcher (PRESERVED)
   ------------------------------------------------ */
   function applyLang(lang) {
     const dict = T[lang];
@@ -477,30 +1076,24 @@
     currentLang = lang;
     localStorage.setItem('lang', lang);
 
-    // Update html lang attribute
     document.documentElement.lang = lang;
-    // Update page title
     if (dict['page.title']) document.title = dict['page.title'];
 
-    // Update text content
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
       if (dict[key] != null) el.textContent = dict[key];
     });
 
-    // Update innerHTML for elements with rich content
     document.querySelectorAll('[data-i18n-html]').forEach(el => {
       const key = el.getAttribute('data-i18n-html');
       if (dict[key] != null) el.innerHTML = dict[key];
     });
 
-    // Update placeholders
     document.querySelectorAll('[data-i18n-ph]').forEach(el => {
       const key = el.getAttribute('data-i18n-ph');
       if (dict[key] != null) el.placeholder = dict[key];
     });
 
-    // Update toggle buttons state (both desktop and mobile)
     document.querySelectorAll('.lang-toggle').forEach(toggle => {
       toggle.querySelectorAll('.lang-toggle__opt').forEach(opt => {
         opt.classList.toggle('lang-toggle__opt--active', opt.getAttribute('data-lang') === lang);
@@ -509,7 +1102,6 @@
   }
 
   function initLang() {
-    // Bind both desktop and mobile toggles
     document.querySelectorAll('.lang-toggle').forEach(toggle => {
       toggle.addEventListener('click', (e) => {
         const opt = e.target.closest('.lang-toggle__opt');
@@ -521,27 +1113,107 @@
       });
     });
 
-    // Apply saved language on load (skip if default LT)
-    if (currentLang !== 'lt') {
-      applyLang(currentLang);
-    }
+    /*
+     * FIX (Critical Issue 1 — Initial Render Glitch):
+     *
+     * The old code only called applyLang when currentLang !== 'lt',
+     * because the HTML already contains Lithuanian text. However, this
+     * meant data-i18n-html elements were never formally processed
+     * through applyLang before text-splitting animations ran. When a
+     * user had 'en' stored in localStorage, the page first showed
+     * Lithuanian HTML, then applyLang('en') ran, then GSAP split the
+     * English text — but for 'lt' users, content was never "resolved"
+     * and the raw HTML was sent directly into the broken splitter.
+     *
+     * Always applying the language on init ensures all i18n content is
+     * properly set in the DOM before any animation code manipulates it.
+     */
+    applyLang(currentLang);
   }
 
   /* ------------------------------------------------
-     Boot
+     12. Service Row Hover — glow tracking
+  ------------------------------------------------ */
+  function initServiceGlow() {
+    if (isTouch || RM) return;
+
+    document.querySelectorAll('.service-row').forEach(row => {
+      row.addEventListener('mousemove', (e) => {
+        const rect = row.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        row.style.setProperty('--glow-x', x + '%');
+        row.style.setProperty('--glow-y', y + '%');
+      }, { passive: true });
+    });
+  }
+
+  /* ------------------------------------------------
+     13. Mobile Process Scroll (touch-friendly)
+  ------------------------------------------------ */
+  function initMobileProcessScroll() {
+    // No longer needed — drag works on all devices
+    return;
+  }
+
+  /* ------------------------------------------------
+     BOOT
   ------------------------------------------------ */
   function init() {
-    initPrecisionLine();
-    initReveal();
+    // Ensure scroll is at top on every page load
+    window.scrollTo(0, 0);
+
+    initFluid();
     initNav();
     initSmooth();
+    initScrollProgress();
     initContactForm();
     initLang();
+    initServiceGlow();
+    initMobileProcessScroll();
+
+    if (typeof gsap !== 'undefined') {
+      if (typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+      }
+      if (typeof ScrollToPlugin !== 'undefined') {
+        gsap.registerPlugin(ScrollToPlugin);
+      }
+
+      // Preloader runs first; hero content appears instantly after
+      initPreloader(function () {
+        // Make hero content visible immediately — no entrance animation
+        document.querySelectorAll('.hero-headline__line, .hero-badge, .hero-sub, .hero-actions, .hero-stats').forEach(function (el) {
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        });
+        // Also make .char spans inside headline visible
+        document.querySelectorAll('.hero-headline .char').forEach(function (ch) {
+          ch.style.opacity = '1';
+          ch.style.transform = 'none';
+        });
+        // Scroll-triggered animations for sections below the hero still run
+        initScrollAnimations();
+        initProcessDrag();
+      });
+    } else {
+      // Fallback: no GSAP available
+      initPreloader(function () {
+        document.querySelectorAll('.hero-headline__line, .hero-badge, .hero-sub, .hero-actions, .hero-stats, .contact-sub, .cform, .service-row, .project-panel').forEach(function (el) {
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        });
+      });
+    }
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
-    init();
+    if (typeof gsap === 'undefined') {
+      window.addEventListener('load', init);
+    } else {
+      init();
+    }
   }
 })();
