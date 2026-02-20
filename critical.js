@@ -356,10 +356,12 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     const statusEl   = document.getElementById('cf-status');
     const captchaWrap = document.getElementById('cf-captcha');
     const captchaBox  = document.getElementById('cf-captcha-widget');
+    const agreeInput = document.getElementById('cf-agree');
 
     const nameError  = document.getElementById('cf-name-error');
     const emailError = document.getElementById('cf-email-error');
     const msgError   = document.getElementById('cf-message-error');
+    const agreeError = document.getElementById('cf-agree-error');
 
     let captchaToken  = null;
     let turnstileReady = false;
@@ -392,7 +394,8 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     function clearFieldErrors() {
       form.querySelectorAll('.is-error').forEach(el => el.classList.remove('is-error'));
       [nameInput, emailInput, msgInput].forEach(el => el.setAttribute('aria-invalid', 'false'));
-      [nameError, emailError, msgError].forEach(el => { if (el) el.textContent = ''; });
+      [nameError, emailError, msgError, agreeError].forEach(el => { if (el) el.textContent = ''; });
+      if (agreeInput) agreeInput.classList.remove('is-error');
     }
 
     function setFieldError(input, errorEl, msg) {
@@ -441,11 +444,21 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
       });
     });
 
+    // Agreement checkbox listener
+    if (agreeInput) {
+      agreeInput.addEventListener('change', function () {
+        agreeInput.classList.remove('is-error');
+        if (agreeError) agreeError.textContent = '';
+        updateSubmitState();
+      });
+    }
+
     // Submit button disabled state
     function updateSubmitState() {
       var allFilled = nameInput.value.trim() &&
         emailInput.value.trim() &&
-        msgInput.value.trim();
+        msgInput.value.trim() &&
+        (!agreeInput || agreeInput.checked);
       submitBtn.disabled = !allFilled;
       submitBtn.setAttribute('aria-disabled', String(!allFilled));
     }
@@ -508,6 +521,14 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
         }
       });
 
+      // Validate agreement checkbox
+      if (agreeInput && !agreeInput.checked) {
+        agreeInput.classList.add('is-error');
+        if (agreeError) agreeError.textContent = 'Please accept the service agreement.';
+        if (!firstInvalid) firstInvalid = agreeInput;
+        valid = false;
+      }
+
       if (!valid) {
         setStatus('error', 'Please fill in all fields correctly.');
         if (firstInvalid) firstInvalid.focus();
@@ -562,6 +583,281 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
           window.__1012.track('form_submit', { event_category: 'contact' });
         } else {
           setStatus('error', data.error || 'Error sending message. Please try again.');
+        }
+      } catch (_err) {
+        setStatus('error', 'Network error. Check your connection and try again.');
+      } finally {
+        submitBtn.classList.remove('is-loading');
+        updateSubmitState();
+      }
+    });
+  }
+
+  /* ------------------------------------------------
+     4b. Inquiry Form (start-project page)
+  ------------------------------------------------ */
+  function initInquiryForm() {
+    const SUPABASE_FUNCTION_URL =
+      'https://rlwduxqdfriqhpiztkpd.supabase.co/functions/v1/contact';
+
+    const form = document.getElementById('inquiry-form');
+    if (!form) return;
+
+    const nameInput    = document.getElementById('inq-name');
+    const emailInput   = document.getElementById('inq-email');
+    const companyInput = document.getElementById('inq-company');
+    const phoneInput   = document.getElementById('inq-phone');
+    const serviceInput = document.getElementById('inq-service');
+    const budgetInput  = document.getElementById('inq-budget');
+    const timelineInput = document.getElementById('inq-timeline');
+    const websiteInput = document.getElementById('inq-website');
+    const msgInput     = document.getElementById('inq-message');
+    const referralInput = document.getElementById('inq-referral');
+    const agreeInput   = document.getElementById('inq-agree');
+    const honeyInput   = document.getElementById('inq_honey');
+    const submitBtn    = document.getElementById('inq-submit');
+    const statusEl     = document.getElementById('inq-status');
+    const captchaWrap  = document.getElementById('inq-captcha');
+    const captchaBox   = document.getElementById('inq-captcha-widget');
+
+    const nameError    = document.getElementById('inq-name-error');
+    const emailError   = document.getElementById('inq-email-error');
+    const serviceError = document.getElementById('inq-service-error');
+    const msgError     = document.getElementById('inq-message-error');
+    const agreeError   = document.getElementById('inq-agree-error');
+
+    let captchaToken   = null;
+    let turnstileReady = false;
+    let widgetId       = null;
+    let formStarted    = false;
+
+    // Track first field interaction
+    [nameInput, emailInput, msgInput].forEach(function (input) {
+      input.addEventListener('focus', function () {
+        if (!formStarted) {
+          formStarted = true;
+          window.__1012.track('form_start', { event_category: 'inquiry' });
+        }
+      }, { once: false });
+    });
+
+    function sanitize(str) {
+      return str ? str.trim().replace(/<[^>]*>/g, '') : '';
+    }
+
+    function setStatus(type, text) {
+      statusEl.className = 'cform__status';
+      if (type) {
+        statusEl.classList.add('is-' + type);
+        statusEl.textContent = text;
+        if (type === 'success') statusEl.focus();
+      }
+    }
+
+    function clearFieldErrors() {
+      form.querySelectorAll('.is-error').forEach(el => el.classList.remove('is-error'));
+      [nameInput, emailInput, serviceInput, msgInput].forEach(el => el.setAttribute('aria-invalid', 'false'));
+      [nameError, emailError, serviceError, msgError, agreeError].forEach(el => { if (el) el.textContent = ''; });
+      if (agreeInput) agreeInput.classList.remove('is-error');
+    }
+
+    function setFieldError(input, errorEl, msg) {
+      input.classList.add('is-error');
+      input.setAttribute('aria-invalid', 'true');
+      if (errorEl) errorEl.textContent = msg;
+    }
+
+    function validateField(input, errorEl) {
+      if (input === nameInput && !input.value.trim()) {
+        setFieldError(input, errorEl, 'Please enter your name.');
+        return false;
+      }
+      if (input === emailInput && (!input.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim()))) {
+        setFieldError(input, errorEl, 'Please enter a valid email address.');
+        return false;
+      }
+      if (input === serviceInput && !input.value) {
+        setFieldError(input, errorEl, 'Please select a service type.');
+        return false;
+      }
+      if (input === msgInput && !input.value.trim()) {
+        setFieldError(input, errorEl, 'Please describe your project.');
+        return false;
+      }
+      input.classList.remove('is-error');
+      input.setAttribute('aria-invalid', 'false');
+      if (errorEl) errorEl.textContent = '';
+      return true;
+    }
+
+    var fieldMap = [
+      [nameInput, nameError],
+      [emailInput, emailError],
+      [serviceInput, serviceError],
+      [msgInput, msgError],
+    ];
+
+    fieldMap.forEach(function (pair) {
+      var eventName = pair[0].tagName === 'SELECT' ? 'change' : 'blur';
+      pair[0].addEventListener(eventName, function () {
+        validateField(pair[0], pair[1]);
+        updateSubmitState();
+      });
+      if (pair[0].tagName !== 'SELECT') {
+        pair[0].addEventListener('input', function () {
+          pair[0].classList.remove('is-error');
+          pair[0].setAttribute('aria-invalid', 'false');
+          if (pair[1]) pair[1].textContent = '';
+          updateSubmitState();
+        });
+      }
+    });
+
+    // Agreement checkbox
+    agreeInput.addEventListener('change', function () {
+      agreeInput.classList.remove('is-error');
+      if (agreeError) agreeError.textContent = '';
+      updateSubmitState();
+    });
+
+    function updateSubmitState() {
+      var allFilled = nameInput.value.trim() &&
+        emailInput.value.trim() &&
+        serviceInput.value &&
+        msgInput.value.trim() &&
+        agreeInput.checked;
+      submitBtn.disabled = !allFilled;
+      submitBtn.setAttribute('aria-disabled', String(!allFilled));
+    }
+
+    updateSubmitState();
+
+    function loadTurnstile() {
+      return new Promise((resolve) => {
+        if (turnstileReady) { resolve(); return; }
+        if (window.turnstile) { turnstileReady = true; resolve(); return; }
+        window.__onTurnstileLoad = () => { turnstileReady = true; resolve(); };
+        var s = document.createElement('script');
+        s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js'
+              + '?onload=__onTurnstileLoad&render=explicit';
+        s.async = true;
+        document.head.appendChild(s);
+      });
+    }
+
+    async function showCaptcha(siteKey) {
+      captchaWrap.hidden = false;
+      captchaWrap.classList.add('is-visible');
+
+      await loadTurnstile();
+
+      if (widgetId !== null) {
+        window.turnstile.reset(widgetId);
+      } else {
+        widgetId = window.turnstile.render(captchaBox, {
+          sitekey: siteKey,
+          theme: 'dark',
+          callback: (token) => {
+            captchaToken = token;
+            form.requestSubmit();
+          },
+          'error-callback': () => {
+            setStatus('error', 'CAPTCHA verification failed. Please try again.');
+          },
+        });
+      }
+    }
+
+    function hideCaptcha() {
+      captchaWrap.hidden = true;
+      captchaWrap.classList.remove('is-visible');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearFieldErrors();
+      setStatus('', '');
+
+      let valid = true;
+      let firstInvalid = null;
+
+      fieldMap.forEach(function (pair) {
+        if (!validateField(pair[0], pair[1])) {
+          if (!firstInvalid) firstInvalid = pair[0];
+          valid = false;
+        }
+      });
+
+      if (!agreeInput.checked) {
+        agreeInput.classList.add('is-error');
+        if (agreeError) agreeError.textContent = 'Please accept the service agreement.';
+        if (!firstInvalid) firstInvalid = agreeInput;
+        valid = false;
+      }
+
+      if (!valid) {
+        setStatus('error', 'Please fill in all required fields.');
+        if (firstInvalid) firstInvalid.focus();
+        return;
+      }
+
+      submitBtn.classList.add('is-loading');
+      submitBtn.disabled = true;
+      submitBtn.setAttribute('aria-disabled', 'true');
+
+      const payload = {
+        name: sanitize(nameInput.value),
+        email: sanitize(emailInput.value),
+        message: sanitize(msgInput.value),
+        form_type: 'inquiry',
+      };
+
+      // Extended fields
+      if (companyInput.value.trim()) payload.company = sanitize(companyInput.value);
+      if (phoneInput.value.trim()) payload.phone = sanitize(phoneInput.value);
+      if (serviceInput.value) payload.service = serviceInput.value;
+      if (budgetInput.value) payload.budget = budgetInput.value;
+      if (timelineInput.value) payload.timeline = timelineInput.value;
+      if (websiteInput.value.trim()) payload.website = sanitize(websiteInput.value);
+      if (referralInput.value) payload.referral = referralInput.value;
+
+      if (honeyInput && honeyInput.value) {
+        payload._honey = honeyInput.value;
+      }
+
+      if (captchaToken) {
+        payload.captcha_token = captchaToken;
+      }
+
+      try {
+        const res = await fetch(SUPABASE_FUNCTION_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (data.captcha_required) {
+          submitBtn.classList.remove('is-loading');
+          submitBtn.disabled = false;
+          submitBtn.setAttribute('aria-disabled', 'false');
+          captchaToken = null;
+          setStatus('error', 'Please confirm you are not a robot.');
+          showCaptcha(data.site_key);
+          return;
+        }
+
+        if (res.ok && data.success) {
+          setStatus('success', 'Thank you! Your inquiry has been submitted. We\'ll respond within 24 hours with a tailored scope and estimate.');
+          form.reset();
+          captchaToken = null;
+          hideCaptcha();
+          updateSubmitState();
+
+          window.__1012.track('form_submit', { event_category: 'inquiry' });
+        } else {
+          setStatus('error', data.error || 'Error sending inquiry. Please try again.');
         }
       } catch (_err) {
         setStatus('error', 'Network error. Check your connection and try again.');
@@ -652,6 +948,7 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     initSmooth();
     initScrollProgress();
     initContactForm();
+    initInquiryForm();
     initFAQ();
     initScrollDepthTracking();
 
@@ -679,7 +976,7 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
         if (RM) {
           // Force all animated elements visible immediately
-          document.querySelectorAll('.contact-sub, .cform, .service-row, .faq-item, .proc__step').forEach(function (el) {
+          document.querySelectorAll('.contact-sub, .cform, .cform--inquiry, .service-row, .faq-item, .proc__step').forEach(function (el) {
             el.style.opacity = '1';
             el.style.transform = 'none';
           });
@@ -696,7 +993,7 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
         var mainContent = document.getElementById('main-content');
         if (mainContent) mainContent.focus({ preventScroll: true });
 
-        document.querySelectorAll('.hero-headline__line, .hero-badge, .hero-sub, .hero-actions, .hero-stats, .contact-sub, .cform, .service-row, .faq-item').forEach(function (el) {
+        document.querySelectorAll('.hero-headline__line, .hero-badge, .hero-sub, .hero-actions, .hero-stats, .contact-sub, .cform, .cform--inquiry, .service-row, .faq-item').forEach(function (el) {
           el.style.opacity = '1';
           el.style.transform = 'none';
         });

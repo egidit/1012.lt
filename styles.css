@@ -1399,6 +1399,129 @@ a.service-row {
   color: var(--success);
 }
 
+/* ── Inquiry Form (start-project page) ─────── */
+.inquiry-section {
+  padding: 0 0 var(--space-lg);
+}
+
+.cform--inquiry {
+  max-width: 780px;
+}
+
+.cform__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 clamp(1.5rem, 3vw, 3rem);
+}
+
+@media (max-width: 600px) {
+  .cform__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Select dropdown */
+.cform__select-wrap {
+  position: relative;
+}
+
+.cform__select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  padding-right: 2rem;
+  background: transparent;
+  border-radius: 0;
+}
+
+.cform__select option {
+  background: var(--bg-elevated);
+  color: var(--fg);
+  padding: 0.5rem;
+}
+
+.cform__select-arrow {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--fg-muted);
+  display: flex;
+  align-items: center;
+  transition: color 0.3s;
+}
+
+.cform__select:focus ~ .cform__select-arrow {
+  color: var(--accent);
+}
+
+/* Checkbox / Agreement */
+.cform__agreement {
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.cform__checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+.cform__checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.cform__checkbox-box {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--fg-dim);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.cform__checkbox-box svg {
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.2s, transform 0.2s var(--ease-out-expo);
+}
+
+.cform__checkbox:checked ~ .cform__checkbox-box {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.cform__checkbox:checked ~ .cform__checkbox-box svg {
+  opacity: 1;
+  transform: scale(1);
+  stroke: var(--bg);
+}
+
+.cform__checkbox:focus-visible ~ .cform__checkbox-box {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.cform__checkbox-text {
+  font-size: var(--f-small);
+  color: var(--fg-muted);
+  line-height: 1.6;
+}
+
+.cform__checkbox.is-error ~ .cform__checkbox-box {
+  border-color: var(--error);
+}
+
 /* ── FOOTER ────────────────────────────────── */
 .site-footer {
   position: relative;
@@ -2006,6 +2129,7 @@ a.service-row {
   .hero-stats,
   .contact-sub,
   .cform,
+  .cform--inquiry,
   .service-row,
   .faq-item,
   .proc__step,
@@ -2037,6 +2161,7 @@ a.service-row {
 .no-js .hero-stats,
 .no-js .contact-sub,
 .no-js .cform,
+.no-js .cform--inquiry,
 .no-js .service-row,
 .no-js .faq-item,
 .no-js .proc__step,
