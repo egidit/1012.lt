@@ -425,72 +425,216 @@
   }
 
   /* ------------------------------------------------
-     5. Process Section — Draggable Horizontal Track
+     5. Process Section — Stacked card-reveal scroll
   ------------------------------------------------ */
-  function initProcessDrag() {
-    const track = document.querySelector('.process-track');
-    if (!track) return;
+  function initProcessSteps() {
+    var steps = document.querySelectorAll('.proc__step');
+    if (!steps.length) return;
 
-    let isDown = false;
-    let startX = 0;
-    let scrollLeft = 0;
-    let hasMoved = false;
+    var numEl = document.querySelector('.proc__num');
+    var titleEl = document.querySelector('.proc__active-title');
+    var outputEl = document.querySelector('.proc__active-output');
+    var fillEl = document.querySelector('.proc__progress-fill');
+    var dots = document.querySelectorAll('.proc__dot');
+    var section = document.querySelector('.act--process');
+    var stepsContainer = document.querySelector('.proc__steps');
+    var currentIndex = -1;
+    var totalSteps = steps.length;
+    var activeTriggers = [];   // track all ScrollTriggers we create
+    var procTrigger = null;    // the pinned one (desktop only)
+    var currentMode = null;    // 'mobile' | 'desktop'
+    var targetIndex = 0;       // where scroll wants us to be
+    var stepping = false;      // animation frame guard
 
-    track.addEventListener('mousedown', (e) => {
-      isDown = true;
-      hasMoved = false;
-      track.classList.add('is-dragging');
-      startX = e.pageX - track.offsetLeft;
-      scrollLeft = track.scrollLeft;
-    });
+    function applyStep(index) {
+      // Immediately apply visuals for a single index
+      currentIndex = index;
 
-    track.addEventListener('mouseleave', () => {
-      isDown = false;
-      track.classList.remove('is-dragging');
-    });
+      var step = steps[index];
+      if (numEl) numEl.textContent = step.getAttribute('data-step-num');
+      if (titleEl) titleEl.textContent = step.getAttribute('data-step-title');
+      if (outputEl) outputEl.textContent = step.getAttribute('data-step-output');
+      if (fillEl) fillEl.style.width = ((index + 1) / totalSteps * 100) + '%';
 
-    track.addEventListener('mouseup', () => {
-      isDown = false;
-      track.classList.remove('is-dragging');
-    });
+      dots.forEach(function (dot, i) {
+        dot.classList.toggle('proc__dot--active', i <= index);
+      });
 
-    track.addEventListener('mousemove', (e) => {
-      if (!isDown) return;
-      e.preventDefault();
-      hasMoved = true;
-      const x = e.pageX - track.offsetLeft;
-      const walk = (x - startX) * 1.5;
-      track.scrollLeft = scrollLeft - walk;
-    });
-
-    track.addEventListener('selectstart', (e) => {
-      if (isDown) e.preventDefault();
-    });
-
-    track.addEventListener('click', (e) => {
-      if (hasMoved) e.preventDefault();
-    });
-
-    // Arrow buttons
-    const prevBtn = document.querySelector('.process-nav__btn--prev');
-    const nextBtn = document.querySelector('.process-nav__btn--next');
-    const firstCard = track.querySelector('.process-card');
-    if (!firstCard) return;
-
-    function getScrollStep() {
-      return firstCard.offsetWidth + parseFloat(getComputedStyle(track.querySelector('.process-track__inner')).gap || 0);
-    }
-
-    if (prevBtn) {
-      prevBtn.addEventListener('click', () => {
-        track.scrollBy({ left: -getScrollStep(), behavior: 'smooth' });
+      steps.forEach(function (s, i) {
+        s.classList.remove('is-active', 'is-above');
+        if (i < index) {
+          s.classList.add('is-above');
+        } else if (i === index) {
+          s.classList.add('is-active');
+        }
       });
     }
-    if (nextBtn) {
-      nextBtn.addEventListener('click', () => {
-        track.scrollBy({ left: getScrollStep(), behavior: 'smooth' });
+
+    // Walk one step at a time toward targetIndex so dots never skip
+    function stepToward() {
+      if (currentIndex === targetIndex) { stepping = false; return; }
+      var next = currentIndex + (targetIndex > currentIndex ? 1 : -1);
+      applyStep(next);
+      // Small delay between each intermediate step for visible transition
+      if (currentIndex !== targetIndex) {
+        setTimeout(function () { requestAnimationFrame(stepToward); }, 120);
+      } else {
+        stepping = false;
+      }
+    }
+
+    function setActiveStep(index) {
+      if (index === targetIndex && index === currentIndex) return;
+      targetIndex = index;
+      if (!stepping) {
+        stepping = true;
+        requestAnimationFrame(stepToward);
+      }
+    }
+
+    // Instant jump (no animation) — used during teardown / init
+    function setActiveStepImmediate(index) {
+      targetIndex = index;
+      stepping = false;
+      applyStep(index);
+    }
+
+    function sizeContainer() {
+      var max = 0;
+      steps.forEach(function (s) {
+        s.style.position = 'relative';
+        s.style.transform = 'none';
+        s.style.opacity = '1';
+        var h = s.offsetHeight;
+        if (h > max) max = h;
+        s.style.position = '';
+        s.style.transform = '';
+        s.style.opacity = '';
+      });
+      if (max > 0) stepsContainer.style.minHeight = max + 'px';
+    }
+
+    // Tear down all process-related ScrollTriggers and inline styles
+    function teardown() {
+      activeTriggers.forEach(function (t) { t.kill(); });
+      activeTriggers = [];
+      procTrigger = null;
+      window.__1012 = window.__1012 || {};
+      window.__1012.procTrigger = null;
+
+      // Remove pin-related inline styles GSAP may have left
+      section.style.cssText = '';
+      stepsContainer.style.minHeight = '';
+
+      // Reset step classes
+      currentIndex = -1;
+      targetIndex = 0;
+      stepping = false;
+      steps.forEach(function (s) {
+        s.classList.remove('is-active', 'is-above');
       });
     }
+
+    function setupMobile() {
+      if (currentMode === 'mobile') return;
+      teardown();
+      currentMode = 'mobile';
+
+      setActiveStepImmediate(0);
+      if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        steps.forEach(function (step, i) {
+          var t = ScrollTrigger.create({
+            trigger: step,
+            start: 'top 70%',
+            end: 'bottom 30%',
+            onEnter: function () { setActiveStep(i); },
+            onEnterBack: function () { setActiveStep(i); }
+          });
+          activeTriggers.push(t);
+        });
+      }
+    }
+
+    function setupDesktop() {
+      if (currentMode === 'desktop') return;
+      teardown();
+      currentMode = 'desktop';
+
+      sizeContainer();
+      setActiveStepImmediate(0);
+
+      if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        procTrigger = ScrollTrigger.create({
+          trigger: section,
+          start: 'top top',
+          end: '+=' + (totalSteps * 70) + '%',
+          pin: true,
+          pinSpacing: true,
+          scrub: false,
+          onUpdate: function (self) {
+            if (window.__1012 && window.__1012.navScrolling) return;
+            var raw = self.progress * totalSteps;
+            var idx = Math.min(Math.floor(raw), totalSteps - 1);
+            setActiveStep(idx);
+          }
+        });
+        activeTriggers.push(procTrigger);
+
+        window.__1012 = window.__1012 || {};
+        window.__1012.procTrigger = procTrigger;
+      } else {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              var idx = Array.prototype.indexOf.call(steps, entry.target);
+              if (idx !== -1) setActiveStep(idx);
+            }
+          });
+        }, { rootMargin: '-30% 0px -30% 0px', threshold: 0.1 });
+        steps.forEach(function (step) { observer.observe(step); });
+      }
+    }
+
+    // Respond to breakpoint changes
+    var mql = window.matchMedia('(max-width: 900px)');
+
+    function applyMode() {
+      if (mql.matches) {
+        setupMobile();
+      } else {
+        setupDesktop();
+      }
+    }
+
+    // Initial setup
+    applyMode();
+
+    // Listen for breakpoint crossing (works on resize)
+    if (mql.addEventListener) {
+      mql.addEventListener('change', applyMode);
+    } else if (mql.addListener) {
+      mql.addListener(applyMode);      // legacy Safari
+    }
+
+    // Dot click navigation
+    dots.forEach(function (dot) {
+      dot.addEventListener('click', function () {
+        var idx = parseInt(dot.getAttribute('data-step'), 10);
+        if (idx >= 0 && idx < totalSteps && procTrigger) {
+          var targetProgress = (idx + 0.5) / totalSteps;
+          var scrollTo = procTrigger.start + (procTrigger.end - procTrigger.start) * targetProgress;
+          gsap.to(window, { scrollTo: scrollTo, duration: 0.8, ease: 'power2.out' });
+        }
+      });
+    });
+
+    // Recalculate on resize (only for desktop mode)
+    window.addEventListener('resize', function () {
+      if (currentMode === 'desktop') {
+        sizeContainer();
+        ScrollTrigger.refresh();
+      }
+    });
   }
 
   /* ------------------------------------------------
@@ -522,14 +666,14 @@
         initScrollAnimations();
       } else {
         // Force all animated elements visible
-        document.querySelectorAll('.contact-sub, .cform, .service-row, .faq-item, .process-card, .process-card__num').forEach(function (el) {
+        document.querySelectorAll('.contact-sub, .cform, .service-row, .faq-item, .proc__step').forEach(function (el) {
           el.style.opacity = '1';
           el.style.transform = 'none';
         });
       }
     }
 
-    initProcessDrag();
+    initProcessSteps();
   }
 
   // Wait for critical.js preloader to finish

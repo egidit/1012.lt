@@ -306,11 +306,24 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
         const target = document.querySelector(id);
         if (target) {
           e.preventDefault();
+
+          // Signal process section to disable pin during nav scroll
+          window.__1012.navScrolling = true;
+          var pt = window.__1012.procTrigger;
+          if (pt) { pt.disable(false); }
+
           var top = target.getBoundingClientRect().top + window.scrollY - 80;
+          var onDone = function () {
+            window.__1012.navScrolling = false;
+            if (pt) { pt.enable(false); }
+            if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
+          };
           if (typeof gsap !== 'undefined' && typeof ScrollToPlugin !== 'undefined') {
-            gsap.to(window, { scrollTo: top, duration: 0.45, ease: 'power2.out' });
+            gsap.to(window, { scrollTo: top, duration: 0.45, ease: 'power2.out', onComplete: onDone });
           } else {
             window.scrollTo({ top: top, behavior: 'smooth' });
+            // Approximate end of native smooth scroll
+            setTimeout(onDone, 600);
           }
 
           // Track CTA clicks
@@ -666,7 +679,7 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
         if (RM) {
           // Force all animated elements visible immediately
-          document.querySelectorAll('.contact-sub, .cform, .service-row, .faq-item, .process-card, .process-card__num').forEach(function (el) {
+          document.querySelectorAll('.contact-sub, .cform, .service-row, .faq-item, .proc__step').forEach(function (el) {
             el.style.opacity = '1';
             el.style.transform = 'none';
           });

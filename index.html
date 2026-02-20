@@ -58,8 +58,8 @@
     /* Critical layout: body, nav, hero — prevents layout shift while CSS loads async */
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     :root{--bg:#0a0a0a;--fg:#f0efe9;--fg-muted:#8f8f86;--fg-dim:#5a5a55;--accent:#c8ff00;--accent-dim:rgba(200,255,0,0.12);--accent-glow:rgba(200,255,0,0.25);--f-display:clamp(3.2rem,10vw,9rem);--f-body:clamp(0.95rem,1.1vw,1.1rem);--f-small:clamp(0.75rem,0.85vw,0.85rem);--f-micro:clamp(0.65rem,0.7vw,0.75rem);--nav-h:4rem;--gutter:clamp(1.25rem,3vw,3rem);--space-sm:clamp(1rem,2vw,1.5rem);--space-md:clamp(2rem,4vw,4rem);--space-lg:clamp(4rem,8vw,8rem);--space-xl:clamp(6rem,12vw,14rem);--ease-out-expo:cubic-bezier(0.16,1,0.3,1)}
-    html{font-size:16px;overflow-x:hidden}
-    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:400;color:var(--fg);background:var(--bg);line-height:1.6;overflow-x:hidden;min-height:100vh}
+    html{font-size:16px;overflow-x:clip}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:400;color:var(--fg);background:var(--bg);line-height:1.6;overflow-x:clip;min-height:100vh}
     a{color:inherit;text-decoration:none}
     .topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:var(--nav-h);padding:0 var(--gutter);background:transparent}
     .topbar__logo{display:flex;align-items:baseline;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.15rem;z-index:2}
@@ -375,9 +375,8 @@
       </div>
     </section>
 
-    <!-- ===== ACT III — PROCESS (Horizontal Scroll) ===== -->
+    <!-- ===== ACT III — PROCESS (Split-Screen) ===== -->
     <section id="process" class="act act--process" aria-labelledby="process-heading">
-      <!-- Process track: horizontally scrollable region -->
       <div class="act__container">
 
         <div class="section-eyebrow" data-anim="fade">
@@ -389,52 +388,92 @@
           How it works<br><span class="muted-text">from call to launch.</span>
         </h2>
 
-      </div>
-
-      <div class="process-track" tabindex="0" role="region" aria-label="Process steps, scroll horizontally">
-        <div class="process-track__inner">
-
-          <div class="process-card">
-            <span class="process-card__num mono">01</span>
-            <h3 class="process-card__title">Conversation</h3>
-            <p class="process-card__text">We get to know your business and goals. We'll figure out exactly what the website needs and what result you want to achieve.</p>
-            <span class="process-card__output mono-xs">→ clear plan</span>
+        <div class="proc">
+          <!-- LEFT: sticky number + title column -->
+          <div class="proc__sticky">
+            <div class="proc__num-wrap">
+              <span class="proc__num mono" aria-hidden="true">01</span>
+              <div class="proc__progress" aria-hidden="true">
+                <div class="proc__progress-fill"></div>
+              </div>
+            </div>
+            <h3 class="proc__active-title">Conversation</h3>
+            <span class="proc__active-output mono-xs">→ clear plan</span>
+            <div class="proc__dots" aria-hidden="true">
+              <button class="proc__dot proc__dot--active" data-step="0" aria-label="Step 1: Conversation"></button>
+              <button class="proc__dot" data-step="1" aria-label="Step 2: Design"></button>
+              <button class="proc__dot" data-step="2" aria-label="Step 3: Development"></button>
+              <button class="proc__dot" data-step="3" aria-label="Step 4: Launch"></button>
+              <button class="proc__dot" data-step="4" aria-label="Step 5: Maintenance"></button>
+            </div>
           </div>
 
-          <div class="process-card">
-            <span class="process-card__num mono">02</span>
-            <h3 class="process-card__title">Design</h3>
-            <p class="process-card__text">We prepare the website design — how it will look and how your customers will use it. We show, adjust, and approve together.</p>
-            <span class="process-card__output mono-xs">→ approved design</span>
-          </div>
+          <!-- RIGHT: scrollable step details -->
+          <div class="proc__steps">
 
-          <div class="process-card">
-            <span class="process-card__num mono">03</span>
-            <h3 class="process-card__title">Development</h3>
-            <p class="process-card__text">We build the website — fast, responsive, and working on all devices. You see progress and can comment at every stage.</p>
-            <span class="process-card__output mono-xs">→ working website</span>
-          </div>
+            <div class="proc__step" data-step-num="01" data-step-title="Conversation" data-step-output="→ clear plan">
+              <div class="proc__step-head">
+                <span class="proc__step-num mono-xs">01</span>
+                <h3 class="proc__step-title">Conversation</h3>
+              </div>
+              <p class="proc__step-text">We get to know your business, your goals, and what's not working. Not a sales call — a diagnostic. By the end, you'll know exactly what needs to happen, what it costs, and whether we're the right fit.</p>
+              <div class="proc__step-detail">
+                <span class="proc__step-duration mono-xs">~7 days</span>
+                <span class="proc__step-output mono-xs">→ clear plan</span>
+              </div>
+            </div>
 
-          <div class="process-card">
-            <span class="process-card__num mono">04</span>
-            <h3 class="process-card__title">Launch</h3>
-            <p class="process-card__text">We test everything down to the details — phone, tablet, desktop. Then we launch and your website starts working for you.</p>
-            <span class="process-card__output mono-xs">→ website live</span>
-          </div>
+            <div class="proc__step" data-step-num="02" data-step-title="Design" data-step-output="→ approved design">
+              <div class="proc__step-head">
+                <span class="proc__step-num mono-xs">02</span>
+                <h3 class="proc__step-title">Design</h3>
+              </div>
+              <p class="proc__step-text">We design the site around your customer's decision process — not a template. You'll see full mockups, give feedback, and approve before a single line of code is written. No surprises.</p>
+              <div class="proc__step-detail">
+                <span class="proc__step-duration mono-xs">~14 days</span>
+                <span class="proc__step-output mono-xs">→ approved design</span>
+              </div>
+            </div>
 
-          <div class="process-card">
-            <span class="process-card__num mono">05</span>
-            <h3 class="process-card__title">Maintenance</h3>
-            <p class="process-card__text">We don't disappear after launch. Updates, monitoring, fixes — your website stays fast, secure, and running smoothly.</p>
-            <span class="process-card__output mono-xs">→ peace of mind</span>
-          </div>
+            <div class="proc__step" data-step-num="03" data-step-title="Development" data-step-output="→ working website">
+              <div class="proc__step-head">
+                <span class="proc__step-num mono-xs">03</span>
+                <h3 class="proc__step-title">Development</h3>
+              </div>
+              <p class="proc__step-text">This is where design becomes infrastructure. Fast, responsive, accessible — built on modern code you actually own. You see progress weekly and can steer it at every checkpoint.</p>
+              <div class="proc__step-detail">
+                <span class="proc__step-duration mono-xs">~35 days</span>
+                <span class="proc__step-output mono-xs">→ working website</span>
+              </div>
+            </div>
 
+            <div class="proc__step" data-step-num="04" data-step-title="Launch" data-step-output="→ website live">
+              <div class="proc__step-head">
+                <span class="proc__step-num mono-xs">04</span>
+                <h3 class="proc__step-title">Launch</h3>
+              </div>
+              <p class="proc__step-text">We test every screen, every form, every edge case — then flip the switch. DNS, SSL, analytics, search console — all configured. Your website starts generating results from day one.</p>
+              <div class="proc__step-detail">
+                <span class="proc__step-duration mono-xs">~14 days QA + 1 day launch</span>
+                <span class="proc__step-output mono-xs">→ website live</span>
+              </div>
+            </div>
+
+            <div class="proc__step" data-step-num="05" data-step-title="Maintenance" data-step-output="→ peace of mind">
+              <div class="proc__step-head">
+                <span class="proc__step-num mono-xs">05</span>
+                <h3 class="proc__step-title">Maintenance</h3>
+              </div>
+              <p class="proc__step-text">We don't vanish after launch. Security patches, performance monitoring, content updates — your site stays fast and your data stays safe. Because a neglected website is a liability, not an asset.</p>
+              <div class="proc__step-detail">
+                <span class="proc__step-duration mono-xs">ongoing</span>
+                <span class="proc__step-output mono-xs">→ peace of mind</span>
+              </div>
+            </div>
+
+          </div>
         </div>
-      </div>
 
-      <div class="process-nav">
-        <button class="process-nav__btn process-nav__btn--prev" aria-label="Previous">←</button>
-        <button class="process-nav__btn process-nav__btn--next" aria-label="Next">→</button>
       </div>
     </section>
 
