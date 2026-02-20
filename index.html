@@ -1,36 +1,207 @@
 <!DOCTYPE html>
-<html lang="lt">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>1012.lt — Svetainės Lietuvos verslui</title>
-  <meta name="description" content="Profesionalios interneto svetainės, kurios pritraukia klientus ir stiprina pasitikėjimą. Kuriame Lietuvos smulkiam ir vidutiniam verslui.">
+  <title>1012.lt — Websites That Work for Your Business</title>
+  <meta name="description" content="We build websites that generate inquiries, handle objections, and pay for themselves. For small businesses and ambitious brands across Lithuania.">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Security: Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://challenges.cloudflare.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.google-analytics.com; connect-src 'self' https://rlwduxqdfriqhpiztkpd.supabase.co https://www.google-analytics.com https://challenges.cloudflare.com; font-src 'self'; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js" defer></script>
+  <!-- SEO -->
+  <link rel="canonical" href="https://1012.lt/">
+  <meta name="theme-color" content="#0a0a0a">
 
-  <!-- Preloader: critical inline styles to prevent any content flash -->
+  <!-- Favicons -->
+  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/images/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="/images/apple-touch.png">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="1012.lt — Websites That Work for Your Business">
+  <meta property="og:description" content="We build websites that generate inquiries, handle objections, and pay for themselves. For small businesses and ambitious brands across Lithuania.">
+  <meta property="og:url" content="https://1012.lt/">
+  <meta property="og:image" content="https://1012.lt/images/og-cover.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_GB">
+  <meta property="og:site_name" content="1012.lt">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="1012.lt — Websites That Work for Your Business">
+  <meta name="twitter:description" content="We build websites that generate inquiries, handle objections, and pay for themselves.">
+  <meta name="twitter:image" content="https://1012.lt/images/og-cover.jpg">
+
+  <!-- Self-hosted fonts: preload primary font -->
+  <link rel="preload" href="fonts/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- GSAP (CDN with SRI) -->
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer crossorigin="anonymous" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer crossorigin="anonymous" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js" defer crossorigin="anonymous" integrity="sha384-RVPQwTb0fPz9kI8s5GwAq1Qioto9fnEQt1aKGSQSm8xV6+DIdBSgcCShoHqfKnhv"></script>
+
+  <!-- Preloader + critical above-the-fold inline styles -->
   <style id="preloader-critical">
+    /* Preloader */
     #preloader{position:fixed;inset:0;z-index:10001;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem}
     .preloader-active{overflow:hidden!important}
     .preloader__mask{display:inline-block;overflow:hidden;line-height:1.1}
     .preloader__char{display:inline-block;transform:translateY(120%);opacity:0}
     .preloader__line{transform:scaleX(0);opacity:0}
     .preloader-active .topbar,.preloader-active main,.preloader-active .site-footer,.preloader-active .mob-overlay,.preloader-active .scroll-progress,.preloader-active #fluid-canvas{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
-  </style>
-  <script>window.scrollTo(0,0);if('scrollRestoration' in history)history.scrollRestoration='manual';</script>
 
+    /* Critical layout: body, nav, hero — prevents layout shift while CSS loads async */
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#0a0a0a;--fg:#f0efe9;--fg-muted:#8f8f86;--fg-dim:#5a5a55;--accent:#c8ff00;--accent-dim:rgba(200,255,0,0.12);--accent-glow:rgba(200,255,0,0.25);--f-display:clamp(3.2rem,10vw,9rem);--f-body:clamp(0.95rem,1.1vw,1.1rem);--f-small:clamp(0.75rem,0.85vw,0.85rem);--f-micro:clamp(0.65rem,0.7vw,0.75rem);--nav-h:4rem;--gutter:clamp(1.25rem,3vw,3rem);--space-sm:clamp(1rem,2vw,1.5rem);--space-md:clamp(2rem,4vw,4rem);--space-lg:clamp(4rem,8vw,8rem);--space-xl:clamp(6rem,12vw,14rem);--ease-out-expo:cubic-bezier(0.16,1,0.3,1)}
+    html{font-size:16px;overflow-x:hidden}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:400;color:var(--fg);background:var(--bg);line-height:1.6;overflow-x:hidden;min-height:100vh}
+    a{color:inherit;text-decoration:none}
+    .topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:var(--nav-h);padding:0 var(--gutter);background:transparent}
+    .topbar__logo{display:flex;align-items:baseline;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.15rem;z-index:2}
+    .topbar__logo-num{color:var(--fg)}
+    .topbar__logo-dot{color:var(--accent)}
+    .act--hero{min-height:100vh;display:flex;align-items:center;padding:var(--space-xl) 0 var(--space-lg);position:relative}
+    .act__container{max-width:1200px;margin:0 auto;padding:0 var(--gutter)}
+    .hero-headline{font-family:'Space Grotesk',sans-serif;font-size:var(--f-display);font-weight:700;line-height:0.95;letter-spacing:-0.04em;margin-bottom:var(--space-sm);max-width:14ch;overflow:hidden}
+    .skip-link{position:absolute;top:-100%;left:1rem;z-index:100000;padding:0.75rem 1.5rem;background:var(--accent);color:var(--bg);font-weight:700;font-size:0.875rem;border-radius:4px;text-decoration:none;opacity:0;transition:top 0.15s,opacity 0.15s}
+    .skip-link:focus{top:1rem;opacity:1;outline:2px solid var(--fg);outline-offset:2px}
+  </style>
+  <!-- Full stylesheet (critical CSS is inlined above) -->
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Structured Data: Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "1012.lt",
+    "url": "https://1012.lt",
+    "logo": "https://1012.lt/images/og-cover.jpg",
+    "email": "info@1012.lt",
+    "description": "Web development agency building websites that generate inquiries for small businesses across Lithuania.",
+    "areaServed": "LT",
+    "priceRange": "€€"
+  }
+  </script>
+
+  <!-- Structured Data: FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How much does a website cost?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Business websites: €3,500–€8,000 (5–8 weeks). Includes 4–6 pages, SEO setup, basic CMS, 2 revision rounds, and go-live support. E-commerce: €8,000–€16,000 (8–12 weeks). Custom platforms: quoted after a discovery conversation. No hidden fees."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How long does a project take from start to launch?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Typically 90 days from first call to live website. 7 days discovery, 14 days design approval, 35 days development, 14 days QA, 1 day go-live. Can compress to 60 days with quick feedback."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does the discovery call look like? Is it free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Free. 60–90 minutes, no charge. We ask about your business, goals, budget, and current site issues. You'll know if we're a fit, get a rough estimate, and understand your risks."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What do I own when the project is done?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Everything. Full source code, hosting access, domain ownership, Google Analytics setup, and complete documentation. No vendor lock-in."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do revisions work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "You get 2–3 revision rounds defined upfront. A revision is a conceptual change, not day-to-day feedback which is handled continuously. Post-launch changes quoted separately."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How will I know if the website is actually working?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We set up measurement before we build. Google Analytics 4 conversion tracking for your contact form, traffic sources, and conversion rates. After 90 days you'll have clear data."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What if the website doesn't deliver results?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "If no inquiries: usually a traffic problem (SEO or ads needed). If visitors but no conversions: we'll run heatmaps and test changes. Technical issues: included in maintenance."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What tech stack do you use?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Custom builds: JavaScript/React (frontend), Node.js (backend), Vercel or Netlify (hosting with automatic backups and CDN). No WordPress — your code stays yours."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you work on-site or remotely?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Remote. Calls over Zoom or Teams, 90% async. Lithuanian timezone. We respond within 24 hours."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What's your refund policy?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Within 30 days of launch: full refund, no arguments. After 30 days: 50% refund. If you ordered X and we built X — that's delivered work."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I see websites you've built?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, but not publicly. During the discovery call we share 3–4 references relevant to your industry. You can talk to them directly."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you use AI in your process?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, selectively. AI helps brainstorm headlines, generate meta descriptions, and draft FAQ outlines — then we rewrite everything by hand."
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body class="preloader-active">
 
+  <!-- Skip to content -->
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
   <!-- ===== PRELOADER — Cinematic logo reveal ===== -->
-  <div id="preloader" class="preloader" aria-label="Loading">
+  <div id="preloader" class="preloader" role="status" aria-label="Loading">
     <div class="preloader__logo">
       <span class="preloader__mask"><span class="preloader__char">1</span></span><span class="preloader__mask"><span class="preloader__char">0</span></span><span class="preloader__mask"><span class="preloader__char">1</span></span><span class="preloader__mask"><span class="preloader__char">2</span></span><span class="preloader__mask"><span class="preloader__char preloader__char--accent">.</span></span><span class="preloader__mask"><span class="preloader__char preloader__char--accent">l</span></span><span class="preloader__mask"><span class="preloader__char preloader__char--accent">t</span></span>
     </div>
@@ -43,46 +214,36 @@
   <!-- Fluid WebGL canvas -->
   <canvas id="fluid-canvas" aria-hidden="true"></canvas>
 
-  <!-- ===== NAVIGATION — Minimal floating bar ===== -->
+  <!-- ===== NAVIGATION ===== -->
   <header class="topbar" role="banner">
-    <a href="#" class="topbar__logo" aria-label="1012.lt pradžia">
+    <a href="#" class="topbar__logo" aria-label="1012.lt home">
       <span class="topbar__logo-num">1012</span><span class="topbar__logo-dot">.lt</span>
     </a>
 
-    <nav class="topbar__nav" aria-label="Pagrindinė navigacija">
-      <a href="#paslaugos" class="topbar__link" data-i18n="nav.services">Paslaugos</a>
-      <a href="#procesas"  class="topbar__link" data-i18n="nav.process">Procesas</a>
-      <a href="#projektai" class="topbar__link" data-i18n="nav.projects">Projektai</a>
-      <a href="#kontaktai" class="topbar__link" data-i18n="nav.contact">Kontaktai</a>
+    <nav class="topbar__nav" aria-label="Main navigation">
+      <a href="#services" class="topbar__link">Services</a>
+      <a href="#process"  class="topbar__link">Process</a>
+      <a href="#faq"      class="topbar__link">FAQ</a>
+      <a href="#contact"  class="topbar__link">Contact</a>
     </nav>
 
     <div class="topbar__actions">
-      <button class="lang-toggle" aria-label="Switch language">
-        <span class="lang-toggle__opt lang-toggle__opt--active" data-lang="lt">LT</span>
-        <span class="lang-toggle__sep">/</span>
-        <span class="lang-toggle__opt" data-lang="en">EN</span>
-      </button>
-      <a href="#kontaktai" class="topbar__cta" data-i18n="nav.cta">Gauti pasiūlymą</a>
+      <a href="#contact" class="topbar__cta">Start a project</a>
     </div>
 
-    <button class="topbar__burger" aria-label="Atidaryti meniu" aria-expanded="false">
+    <button class="topbar__burger" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span>
     </button>
   </header>
 
   <!-- Mobile overlay menu -->
   <div class="mob-overlay" aria-hidden="true">
-    <nav class="mob-overlay__inner">
-      <a href="#paslaugos" class="mob-overlay__link" data-i18n="nav.services">Paslaugos</a>
-      <a href="#procesas"  class="mob-overlay__link" data-i18n="nav.process">Procesas</a>
-      <a href="#projektai" class="mob-overlay__link" data-i18n="nav.projects">Projektai</a>
-      <a href="#kontaktai" class="mob-overlay__link" data-i18n="nav.contact">Kontaktai</a>
-      <button class="lang-toggle lang-toggle--mob" aria-label="Switch language">
-        <span class="lang-toggle__opt lang-toggle__opt--active" data-lang="lt">LT</span>
-        <span class="lang-toggle__sep">/</span>
-        <span class="lang-toggle__opt" data-lang="en">EN</span>
-      </button>
-      <a href="mailto:info@1012.lt" class="mob-overlay__cta" data-i18n="mob.cta">Susisiekite</a>
+    <nav class="mob-overlay__inner" aria-label="Mobile navigation">
+      <a href="#services" class="mob-overlay__link">Services</a>
+      <a href="#process"  class="mob-overlay__link">Process</a>
+      <a href="#faq"      class="mob-overlay__link">FAQ</a>
+      <a href="#contact"  class="mob-overlay__link">Contact</a>
+      <a href="#contact" class="mob-overlay__cta">Contact Us</a>
     </nav>
   </div>
 
@@ -91,48 +252,48 @@
     <div class="scroll-progress__fill"></div>
   </div>
 
-  <main>
+  <main id="main-content" tabindex="-1">
 
     <!-- ===== ACT I — HERO ===== -->
-    <section id="hero" class="act act--hero">
+    <section id="hero" class="act act--hero" aria-label="Hero">
       <div class="act__container">
 
         <div class="hero-badge" data-anim="fade">
           <span class="hero-badge__dot"></span>
-          <span class="mono-xs" data-i18n="hero.badge">Priimame naujus projektus</span>
+          <span class="mono-xs">Accepting new projects</span>
         </div>
 
         <h1 class="hero-headline" data-anim="split">
-          <span class="hero-headline__line" data-i18n-html="hero.title">
-            Svetainė, kuria klientai <span class="accent-text">pasitikės.</span>
+          <span class="hero-headline__line">
+            Your website isn't a brochure. <span class="accent-text">It's a sales tool.</span>
           </span>
         </h1>
 
-        <p class="hero-sub" data-anim="fade" data-i18n="hero.sub">
-          Profesionalus verslo pristatymas internete. Daugiau užklausų, aiškesnis įvaizdis ir svetainė, kurią lengva valdyti pačiam.
+        <p class="hero-sub" data-anim="fade">
+          Most small business websites look fine and do nothing. We build sites that generate inquiries, handle objections, and pay for themselves.
         </p>
 
         <div class="hero-actions" data-anim="fade">
-          <a href="#kontaktai" class="btn-primary">
-            <span data-i18n="hero.cta1">Gauti pasiūlymą</span>
+          <a href="#contact" class="btn-primary">
+            <span>Start a project</span>
           </a>
-          <a href="#paslaugos" class="btn-ghost" data-i18n="hero.cta2">Mūsų paslaugos</a>
+          <a href="#services" class="btn-ghost">See how we work</a>
         </div>
 
         <div class="hero-stats" data-anim="fade">
-          <div class="hero-stats__item">
-            <span class="hero-stats__val mono">50</span><span class="hero-stats__suffix mono">+</span>
-            <span class="hero-stats__label mono-xs" data-i18n="hero.m1.label">Įgyvendintų projektų</span>
+          <div class="hero-stats__item" aria-label="50+ Projects shipped">
+            <span aria-hidden="true"><span class="hero-stats__val mono">50</span><span class="hero-stats__suffix mono">+</span></span>
+            <span class="hero-stats__label mono-xs" aria-hidden="true">Projects shipped</span>
           </div>
-          <div class="hero-stats__divider"></div>
-          <div class="hero-stats__item">
-            <span class="hero-stats__val mono">8</span><span class="hero-stats__suffix mono">+</span>
-            <span class="hero-stats__label mono-xs" data-i18n="hero.m2.label">Metų patirtis</span>
+          <div class="hero-stats__divider" aria-hidden="true"></div>
+          <div class="hero-stats__item" aria-label="8+ Years building">
+            <span aria-hidden="true"><span class="hero-stats__val mono">8</span><span class="hero-stats__suffix mono">+</span></span>
+            <span class="hero-stats__label mono-xs" aria-hidden="true">Years building</span>
           </div>
-          <div class="hero-stats__divider"></div>
-          <div class="hero-stats__item">
-            <span class="hero-stats__val mono">24</span><span class="hero-stats__suffix mono">h</span>
-            <span class="hero-stats__label mono-xs" data-i18n="hero.m3.label">Atsakymo laikas</span>
+          <div class="hero-stats__divider" aria-hidden="true"></div>
+          <div class="hero-stats__item" aria-label="24h First reply">
+            <span aria-hidden="true"><span class="hero-stats__val mono">24</span><span class="hero-stats__suffix mono">h</span></span>
+            <span class="hero-stats__label mono-xs" aria-hidden="true">First reply</span>
           </div>
         </div>
 
@@ -144,127 +305,128 @@
     </section>
 
     <!-- ===== ACT II — SERVICES ===== -->
-    <section id="paslaugos" class="act act--services">
+    <section id="services" class="act act--services" aria-labelledby="services-heading">
       <div class="act__container">
 
         <div class="section-eyebrow" data-anim="fade">
-          <span class="mono-xs" data-i18n="services.label">Paslaugos</span>
+          <span class="mono-xs">Services</span>
           <span class="section-eyebrow__line"></span>
         </div>
 
-        <h2 class="section-headline" data-anim="split" data-i18n-html="services.title">
-          Ką galime padaryti<br><span class="muted-text">jūsų verslui.</span>
+        <h2 id="services-heading" class="section-headline" data-anim="split">
+          What we build<br><span class="muted-text">and what it gets you.</span>
         </h2>
 
         <div class="services-strip">
 
-          <div class="service-row" data-anim="slide-right">
-            <div class="service-row__num mono-xs">01</div>
+          <a href="/services/business-websites" class="service-row" data-anim="slide-right">
+            <div class="service-row__num mono-xs" aria-hidden="true">01</div>
             <div class="service-row__icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
             </div>
             <div class="service-row__content">
-              <span class="service-row__tag mono-xs" data-i18n="services.c1.label">svetainės</span>
-              <h3 class="service-row__title" data-i18n="services.c1.title">Verslo svetainės</h3>
-              <p class="service-row__text" data-i18n="services.c1.text">Aiškus, profesionalus jūsų verslo pristatymas internete. Svetainė, kuri kelia pasitikėjimą ir skatina klientus kreiptis.</p>
+              <span class="service-row__tag mono-xs">websites</span>
+              <h3 class="service-row__title">Business Websites</h3>
+              <p class="service-row__text">More inquiries, not just more visitors. CTA optimization, lead capture, and a site structure designed to convert browsers into buyers.</p>
             </div>
-            <div class="service-row__arrow">→</div>
-          </div>
+            <div class="service-row__arrow" aria-hidden="true">→</div>
+          </a>
 
-          <div class="service-row" data-anim="slide-right">
-            <div class="service-row__num mono-xs">02</div>
+          <a href="/services/online-stores" class="service-row" data-anim="slide-right">
+            <div class="service-row__num mono-xs" aria-hidden="true">02</div>
             <div class="service-row__icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
             </div>
             <div class="service-row__content">
-              <span class="service-row__tag mono-xs" data-i18n="services.c2.label">e-prekyba</span>
-              <h3 class="service-row__title" data-i18n="services.c2.title">Internetinė parduotuvė</h3>
-              <p class="service-row__text" data-i18n="services.c2.text">Pradėkite pardavinėti internetu be sudėtingumo. Patogi parduotuvė su mokėjimais, užsakymų valdymu ir viskuo, ko reikia prekybai.</p>
+              <span class="service-row__tag mono-xs">e-commerce</span>
+              <h3 class="service-row__title">Online Stores</h3>
+              <p class="service-row__text">Stripe, inventory, order tracking — all wired up. We test checkout flows before launch so you start selling on day one.</p>
             </div>
-            <div class="service-row__arrow">→</div>
-          </div>
+            <div class="service-row__arrow" aria-hidden="true">→</div>
+          </a>
 
-          <div class="service-row" data-anim="slide-right">
-            <div class="service-row__num mono-xs">03</div>
+          <a href="/services/custom-platforms" class="service-row" data-anim="slide-right">
+            <div class="service-row__num mono-xs" aria-hidden="true">03</div>
             <div class="service-row__icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
             </div>
             <div class="service-row__content">
-              <span class="service-row__tag mono-xs" data-i18n="services.c3.label">sprendimai</span>
-              <h3 class="service-row__title" data-i18n="services.c3.title">Individualūs sprendimai</h3>
-              <p class="service-row__text" data-i18n="services.c3.text">Kai standartinis šablonas netinka — sukuriame sistemą, pritaikytą būtent jūsų verslo procesams ir poreikiams.</p>
+              <span class="service-row__tag mono-xs">platforms</span>
+              <h3 class="service-row__title">Custom Platforms</h3>
+              <p class="service-row__text">When off-the-shelf doesn't fit. Booking systems, dashboards, portals — built around your actual workflow, not a template's limitations.</p>
             </div>
-            <div class="service-row__arrow">→</div>
-          </div>
+            <div class="service-row__arrow" aria-hidden="true">→</div>
+          </a>
 
-          <div class="service-row" data-anim="slide-right">
-            <div class="service-row__num mono-xs">04</div>
+          <a href="/services/redesigns" class="service-row" data-anim="slide-right">
+            <div class="service-row__num mono-xs" aria-hidden="true">04</div>
             <div class="service-row__icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
             </div>
             <div class="service-row__content">
-              <span class="service-row__tag mono-xs" data-i18n="services.c4.label">atnaujinimas</span>
-              <h3 class="service-row__title" data-i18n="services.c4.title">Esamos svetainės atnaujinimas</h3>
-              <p class="service-row__text" data-i18n="services.c4.text">Jūsų dabartinė svetainė pasenusi ar lėta? Atnaujinsime dizainą, pagreitinsime ir pritaikysime šių dienų standartams.</p>
+              <span class="service-row__tag mono-xs">redesign</span>
+              <h3 class="service-row__title">Redesigns</h3>
+              <p class="service-row__text">Your current site is slow, outdated, or invisible on Google. We rebuild it on modern infrastructure with measurable performance targets.</p>
             </div>
-            <div class="service-row__arrow">→</div>
-          </div>
+            <div class="service-row__arrow" aria-hidden="true">→</div>
+          </a>
 
         </div>
       </div>
     </section>
 
     <!-- ===== ACT III — PROCESS (Horizontal Scroll) ===== -->
-    <section id="procesas" class="act act--process">
+    <section id="process" class="act act--process" aria-labelledby="process-heading">
+      <!-- Process track: horizontally scrollable region -->
       <div class="act__container">
 
         <div class="section-eyebrow" data-anim="fade">
-          <span class="mono-xs" data-i18n="process.label">Procesas</span>
+          <span class="mono-xs">Process</span>
           <span class="section-eyebrow__line"></span>
         </div>
 
-        <h2 class="section-headline" data-anim="split" data-i18n-html="process.title">
-          Kaip viskas vyksta<br><span class="muted-text">nuo pradžios iki pabaigos.</span>
+        <h2 id="process-heading" class="section-headline" data-anim="split">
+          How it works<br><span class="muted-text">from call to launch.</span>
         </h2>
 
       </div>
 
-      <div class="process-track">
+      <div class="process-track" tabindex="0" role="region" aria-label="Process steps, scroll horizontally">
         <div class="process-track__inner">
 
           <div class="process-card">
             <span class="process-card__num mono">01</span>
-            <h3 class="process-card__title" data-i18n="process.s1.title">Pokalbis</h3>
-            <p class="process-card__text" data-i18n="process.s1.text">Susipažįstame su jūsų verslu ir tikslais. Išsiaiškinsime, ko tiksliai reikia svetainei ir kokį rezultatą norite pasiekti.</p>
-            <span class="process-card__output mono-xs" data-i18n="process.s1.output">→ aiškus planas</span>
+            <h3 class="process-card__title">Conversation</h3>
+            <p class="process-card__text">We get to know your business and goals. We'll figure out exactly what the website needs and what result you want to achieve.</p>
+            <span class="process-card__output mono-xs">→ clear plan</span>
           </div>
 
           <div class="process-card">
             <span class="process-card__num mono">02</span>
-            <h3 class="process-card__title" data-i18n="process.s2.title">Dizainas</h3>
-            <p class="process-card__text" data-i18n="process.s2.text">Paruošiame svetainės dizainą — kaip ji atrodys ir kaip ja naudosis jūsų klientai. Rodome, deriname, tvirtiname kartu.</p>
-            <span class="process-card__output mono-xs" data-i18n="process.s2.output">→ patvirtintas dizainas</span>
+            <h3 class="process-card__title">Design</h3>
+            <p class="process-card__text">We prepare the website design — how it will look and how your customers will use it. We show, adjust, and approve together.</p>
+            <span class="process-card__output mono-xs">→ approved design</span>
           </div>
 
           <div class="process-card">
             <span class="process-card__num mono">03</span>
-            <h3 class="process-card__title" data-i18n="process.s3.title">Kūrimas</h3>
-            <p class="process-card__text" data-i18n="process.s3.text">Sukuriame svetainę — greitą, patogią ir veikiančią visuose įrenginiuose. Jūs matote eigą ir galite komentuoti kiekviename etape.</p>
-            <span class="process-card__output mono-xs" data-i18n="process.s3.output">→ veikianti svetainė</span>
+            <h3 class="process-card__title">Development</h3>
+            <p class="process-card__text">We build the website — fast, responsive, and working on all devices. You see progress and can comment at every stage.</p>
+            <span class="process-card__output mono-xs">→ working website</span>
           </div>
 
           <div class="process-card">
             <span class="process-card__num mono">04</span>
-            <h3 class="process-card__title" data-i18n="process.s4.title">Paleidimas</h3>
-            <p class="process-card__text" data-i18n="process.s4.text">Patikriname viską iki smulkmenų — ar viskas veikia telefone, planšetėje, kompiuteryje. Tada paleidžiame ir jūsų svetainė pradeda dirbti.</p>
-            <span class="process-card__output mono-xs" data-i18n="process.s4.output">→ svetainė gyva</span>
+            <h3 class="process-card__title">Launch</h3>
+            <p class="process-card__text">We test everything down to the details — phone, tablet, desktop. Then we launch and your website starts working for you.</p>
+            <span class="process-card__output mono-xs">→ website live</span>
           </div>
 
           <div class="process-card">
             <span class="process-card__num mono">05</span>
-            <h3 class="process-card__title" data-i18n="process.s5.title">Priežiūra</h3>
-            <p class="process-card__text" data-i18n="process.s5.text">Nepaliekame jūsų vienų. Atnaujiname, prižiūrime, padedame, kai reikia. Jūsų svetainė visada veikia sklandžiai.</p>
-            <span class="process-card__output mono-xs" data-i18n="process.s5.output">→ rami galva</span>
+            <h3 class="process-card__title">Maintenance</h3>
+            <p class="process-card__text">We don't disappear after launch. Updates, monitoring, fixes — your website stays fast, secure, and running smoothly.</p>
+            <span class="process-card__output mono-xs">→ peace of mind</span>
           </div>
 
         </div>
@@ -276,146 +438,249 @@
       </div>
     </section>
 
-    <!-- ===== ACT IV — PROJECTS (Full-bleed showcase) ===== -->
-    <section id="projektai" class="act act--projects">
+    <!-- ===== ACT IV — FAQ ===== -->
+    <section id="faq" class="act act--faq" aria-labelledby="faq-heading">
       <div class="act__container">
 
         <div class="section-eyebrow" data-anim="fade">
-          <span class="mono-xs" data-i18n="projects.label">Projektai</span>
+          <span class="mono-xs">FAQ</span>
           <span class="section-eyebrow__line"></span>
         </div>
 
-        <h2 class="section-headline" data-anim="split" data-i18n-html="projects.title">
-          Rezultatai, kurie<br><span class="muted-text">kalba patys už save.</span>
+        <h2 id="faq-heading" class="section-headline" data-anim="split">
+          Questions you actually<br><span class="muted-text">want answered.</span>
         </h2>
 
-      </div>
+        <div class="faq-list" role="list">
 
-      <div class="projects-showcase">
-
-        <article class="project-panel" data-anim="panel" data-gradient="indigo">
-          <div class="project-panel__visual">
-            <div class="project-panel__gradient"></div>
-            <span class="project-panel__tag mono-xs" data-i18n="project1.tag">Verslo svetainė</span>
-          </div>
-          <div class="project-panel__body">
-            <h3 class="project-panel__title" data-i18n="project1.title">NordTech Solutions</h3>
-            <p class="project-panel__desc" data-i18n="project1.desc">Technologijų įmonei reikėjo svetainės, kuri aiškiai pristatytų paslaugas ir atvestų naujų klientų. Sukūrėme nuo nulio — su patogia kontaktų forma ir aiškia struktūra.</p>
-            <div class="project-panel__metrics">
-              <div class="project-panel__metric">
-                <span class="project-panel__metric-val mono" data-i18n="project1.s1.val">+180%</span>
-                <span class="project-panel__metric-label mono-xs" data-i18n="project1.s1.label">Daugiau užklausų</span>
-              </div>
-              <div class="project-panel__metric">
-                <span class="project-panel__metric-val mono" data-i18n="project1.s2.val">3 sav.</span>
-                <span class="project-panel__metric-label mono-xs" data-i18n="project1.s2.label">Projekto trukmė</span>
+          <div class="faq-item" role="listitem">
+            <h3><button id="faq-trigger-1" class="faq-item__trigger" aria-expanded="false" aria-controls="faq-body-1">
+              <span class="faq-item__question">How much does a website cost?</span>
+              <span class="faq-item__icon" aria-hidden="true"></span>
+            </button></h3>
+            <div id="faq-body-1" class="faq-item__body" role="region" aria-labelledby="faq-trigger-1">
+              <div class="faq-item__answer">
+                <p><strong>Business websites:</strong> €3,500 – €8,000 (5–8 weeks). Includes 4–6 pages, SEO setup, basic CMS, 2 revision rounds, and go-live support. Ongoing maintenance: €200/month.</p>
+                <p><strong>E-commerce:</strong> €8,000 – €16,000 (8–12 weeks). Product catalogs, payment integration, order tracking, conversion optimization, 3 revision rounds.</p>
+                <p><strong>Custom platforms:</strong> Quoted after a discovery conversation.</p>
+                <p>No hidden fees. The price covers everything.</p>
               </div>
             </div>
           </div>
-        </article>
 
-        <article class="project-panel" data-anim="panel" data-gradient="violet">
-          <div class="project-panel__visual">
-            <div class="project-panel__gradient"></div>
-            <span class="project-panel__tag mono-xs" data-i18n="project2.tag">Internetinė parduotuvė</span>
-          </div>
-          <div class="project-panel__body">
-            <h3 class="project-panel__title" data-i18n="project2.title">Gustosa Boutique</h3>
-            <p class="project-panel__desc" data-i18n="project2.desc">Mados prekės ženklas norėjo pradėti pardavinėti internetu. Sukūrėme patogią parduotuvę, kurioje lengva rasti, pasirinkti ir nusipirkti.</p>
-            <div class="project-panel__metrics">
-              <div class="project-panel__metric">
-                <span class="project-panel__metric-val mono" data-i18n="project2.s1.val">+240%</span>
-                <span class="project-panel__metric-label mono-xs" data-i18n="project2.s1.label">Pardavimų augimas</span>
-              </div>
-              <div class="project-panel__metric">
-                <span class="project-panel__metric-val mono" data-i18n="project2.s2.val">4.2%</span>
-                <span class="project-panel__metric-label mono-xs" data-i18n="project2.s2.label">Pirkėjų dalis</span>
+          <div class="faq-item" role="listitem">
+            <h3><button id="faq-trigger-2" class="faq-item__trigger" aria-expanded="false" aria-controls="faq-body-2">
+              <span class="faq-item__question">How long does a project take from start to launch?</span>
+              <span class="faq-item__icon" aria-hidden="true"></span>
+            </button></h3>
+            <div id="faq-body-2" class="faq-item__body" role="region" aria-labelledby="faq-trigger-2">
+              <div class="faq-item__answer">
+                <p>Typically 90 days from first call to live website. Breakdown: 7 days discovery &amp; wireframes, 14 days design approval, 35 days development with feedback loops, 14 days QA &amp; launch prep, 1 day go-live.</p>
+                <p>If you're quick with feedback, we can compress to 60 days. We won't rush to sacrifice quality.</p>
               </div>
             </div>
           </div>
-        </article>
 
-        <article class="project-panel" data-anim="panel" data-gradient="deep">
-          <div class="project-panel__visual">
-            <div class="project-panel__gradient"></div>
-            <span class="project-panel__tag mono-xs" data-i18n="project3.tag">Paieškos platforma</span>
-          </div>
-          <div class="project-panel__body">
-            <h3 class="project-panel__title" data-i18n="project3.title">Vilnius Property Hub</h3>
-            <p class="project-panel__desc" data-i18n="project3.desc">Nekilnojamojo turto platforma, kurioje žmonės gali greitai rasti būstą Vilniuje. Patogi paieška, interaktyvus žemėlapis, greitai auganti auditorija.</p>
-            <div class="project-panel__metrics">
-              <div class="project-panel__metric">
-                <span class="project-panel__metric-val mono" data-i18n="project3.s1.val">15k+</span>
-                <span class="project-panel__metric-label mono-xs" data-i18n="project3.s1.label">Lankytojų per mėnesį</span>
-              </div>
-              <div class="project-panel__metric">
-                <span class="project-panel__metric-val mono" data-i18n="project3.s2.val">Nr. 1</span>
-                <span class="project-panel__metric-label mono-xs" data-i18n="project3.s2.label">Vilniaus NT paieška</span>
+          <div class="faq-item" role="listitem">
+            <h3><button id="faq-trigger-3" class="faq-item__trigger" aria-expanded="false" aria-controls="faq-body-3">
+              <span class="faq-item__question">What does the discovery call look like? Is it free?</span>
+              <span class="faq-item__icon" aria-hidden="true"></span>
+            </button></h3>
+            <div id="faq-body-3" class="faq-item__body" role="region" aria-labelledby="faq-trigger-3">
+              <div class="faq-item__answer">
+                <p>Free. 60–90 minutes, no charge. We'll ask about your business, what "success" means to you, your budget, and why your current site isn't working.</p>
+                <p>By the end you'll know: whether we're a fit, a rough estimate and timeline, and your specific risks. If we're not the right match, we'll recommend agencies that might be.</p>
               </div>
             </div>
           </div>
-        </article>
 
+          <div class="faq-item" role="listitem">
+            <h3><button id="faq-trigger-4" class="faq-item__trigger" aria-expanded="false" aria-controls="faq-body-4">
+              <span class="faq-item__question">What do I own when the project is done?</span>
+              <span class="faq-item__icon" aria-hidden="true"></span>
+            </button></h3>
+            <div id="faq-body-4" class="faq-item__body" role="region" aria-labelledby="faq-trigger-4">
+              <div class="faq-item__answer">
+                <p>Everything. You get the full source code (GitHub repository with your credentials), hosting access (Vercel/Netlify), domain ownership, Google Analytics setup on your account, and complete documentation.</p>
+                <p>No vendor lock-in. You can walk away, hire another developer, and they'll understand your codebase in 30 minutes. Maintenance is €200/month or DIY — your choice.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <h3><button id="faq-trigger-5" class="faq-item__trigger" aria-expanded="false" aria-controls="faq-body-5">
+              <span class="faq-item__question">How do revisions work?</span>
+              <span class="faq-item__icon" aria-hidden="true"></span>
+            </button></h3>
+            <div id="faq-body-5" class="faq-item__body" role="region" aria-labelledby="faq-trigger-5">
+              <div class="faq-item__answer">
+                <p>You get 2–3 revision rounds (defined upfront). A revision means a conceptual change — color scheme, page structure, layout direction. Not "I don't like this" — that's feedback, and we handle it continuously.</p>
+                <p>Post-launch changes: small edits (text, colors) €50–100, medium (new pages, integrations) €500–1,500, large (new features) require a new quote. This keeps the project from living in revision hell.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <h3><button id="faq-trigger-6" class="faq-item__trigger" aria-expanded="false" aria-controls="faq-body-6">
+              <span class="faq-item__question">How will I know if the website is actually working?</span>
+              <span class="faq-item__icon" aria-hidden="true"></span>
+            </button></h3>
+            <div id="faq-body-6" class="faq-item__body" role="region" aria-labelledby="faq-trigger-6">
+              <div class="faq-item__answer">
+                <p>We set up measurement <em>before</em> we build. Google Analytics 4 conversion tracking for your contact form, e-commerce transaction data, or whatever matters to your business.</p>
+                <p>After 90 days you'll have clear data: form submissions, traffic sources, conversion rates. If results aren't happening, we'll spend an hour diagnosing why — on us.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <h3><button id="faq-trigger-7" class="faq-item__trigger" aria-expanded="false" aria-controls="faq-body-7">
+              <span class="faq-item__question">What if the website doesn't deliver results?</span>
+              <span class="faq-item__icon" aria-hidden="true"></span>
+            </button></h3>
+            <div id="faq-body-7" class="faq-item__body" role="region" aria-labelledby="faq-trigger-7">
+              <div class="faq-item__answer">
+                <p><strong>Site works, no inquiries:</strong> Usually a traffic problem. You may need SEO or paid ads — we can help set that up separately.</p>
+                <p><strong>Visitors but no conversions:</strong> UX or messaging issue. We'll run heatmaps, gather data, and test changes.</p>
+                <p><strong>Technical issues:</strong> We fix them. That's what maintenance is for. We won't push you into a "just rebuild everything" cycle.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <h3><button id="faq-trigger-8" class="faq-item__trigger" aria-expanded="false" aria-controls="faq-body-8">
+              <span class="faq-item__question">What tech stack do you use?</span>
+              <span class="faq-item__icon" aria-hidden="true"></span>
+            </button></h3>
+            <div id="faq-body-8" class="faq-item__body" role="region" aria-labelledby="faq-trigger-8">
+              <div class="faq-item__answer">
+                <p>Custom builds: JavaScript/React (frontend), Node.js (backend), Vercel or Netlify (hosting with automatic backups and CDN).</p>
+                <p>Why not WordPress? It's bloated, slow, and a security risk for most use cases. If you specifically need a CMS that non-developers can edit, we'll discuss options — but your code stays yours either way.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <h3><button id="faq-trigger-9" class="faq-item__trigger" aria-expanded="false" aria-controls="faq-body-9">
+              <span class="faq-item__question">Do you work on-site or remotely?</span>
+              <span class="faq-item__icon" aria-hidden="true"></span>
+            </button></h3>
+            <div id="faq-body-9" class="faq-item__body" role="region" aria-labelledby="faq-trigger-9">
+              <div class="faq-item__answer">
+                <p>Remote. Calls and approvals happen over Zoom or Teams, but 90% of the work is async. Your point of contact is in the Lithuanian timezone. We respond within 24 hours.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <h3><button id="faq-trigger-10" class="faq-item__trigger" aria-expanded="false" aria-controls="faq-body-10">
+              <span class="faq-item__question">What's your refund policy?</span>
+              <span class="faq-item__icon" aria-hidden="true"></span>
+            </button></h3>
+            <div id="faq-body-10" class="faq-item__body" role="region" aria-labelledby="faq-trigger-10">
+              <div class="faq-item__answer">
+                <p>If within 30 days of launch you decide the site missed the mark — full refund, no arguments. Our work's quality is the proof.</p>
+                <p>If you request a refund after 30 days despite our back-and-forth to improve it, we refund 50%. If you ordered X and we built X — that's delivered work.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <h3><button id="faq-trigger-11" class="faq-item__trigger" aria-expanded="false" aria-controls="faq-body-11">
+              <span class="faq-item__question">Can I see websites you've built?</span>
+              <span class="faq-item__icon" aria-hidden="true"></span>
+            </button></h3>
+            <div id="faq-body-11" class="faq-item__body" role="region" aria-labelledby="faq-trigger-11">
+              <div class="faq-item__answer">
+                <p>Yes, but not publicly on this site. Client privacy matters — especially if they handle financial or customer data.</p>
+                <p>During our discovery call, we'll share 3–4 references relevant to your industry. You can talk to them directly.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <h3><button id="faq-trigger-12" class="faq-item__trigger" aria-expanded="false" aria-controls="faq-body-12">
+              <span class="faq-item__question">Do you use AI in your process?</span>
+              <span class="faq-item__icon" aria-hidden="true"></span>
+            </button></h3>
+            <div id="faq-body-12" class="faq-item__body" role="region" aria-labelledby="faq-trigger-12">
+              <div class="faq-item__answer">
+                <p>Yes, selectively. AI helps us brainstorm headline variations, generate meta descriptions in bulk, and draft FAQ outlines — then we rewrite everything by hand.</p>
+                <p>Why? It speeds up the boring parts. But AI-generated copy sounds the same everywhere. You'll always see human thinking in the final product.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
 
-    <!-- ===== ACT V — CONTACT (Full-viewport conversational form) ===== -->
-    <section id="kontaktai" class="act act--contact">
+    <!-- ===== ACT V — CONTACT ===== -->
+    <section id="contact" class="act act--contact" aria-labelledby="contact-heading">
       <div class="act__container">
 
         <div class="section-eyebrow" data-anim="fade">
-          <span class="mono-xs" data-i18n="contact.label">Kontaktai</span>
+          <span class="mono-xs">Contact</span>
           <span class="section-eyebrow__line"></span>
         </div>
 
-        <h2 class="contact-headline" data-anim="split">
-          <span data-i18n="contact.title">Pasikalbėkime.</span>
+        <h2 id="contact-heading" class="contact-headline" data-anim="split">
+          <span>Let's talk.</span>
         </h2>
 
-        <p class="contact-sub" data-anim="fade" data-i18n="contact.text">
-          Parašykite mums — atsakysime per 24 valandas. Papasakosime, kiek kainuos, kiek užtruks ir ką tiksliai gausite. Jokių įsipareigojimų.
+        <p class="contact-sub" data-anim="fade">
+          Tell us what you need. We'll respond within 24 hours with a rough scope, timeline, and ballpark cost. No obligations, no sales pitch.
         </p>
 
         <form id="contact-form" class="cform" novalidate data-anim="fade">
 
+          <p class="cform__required-note mono-xs">* Required</p>
+
           <div class="cform__honey" aria-hidden="true">
-            <label for="_honey">Neužpildykite šio lauko</label>
+            <label for="_honey">Do not fill this field</label>
             <input type="text" id="_honey" name="_honey" tabindex="-1" autocomplete="off">
           </div>
 
           <div class="cform__field">
-            <label for="cf-name" class="cform__label mono-xs" data-i18n="form.name.label">Vardas</label>
-            <input type="text" id="cf-name" name="name" class="cform__input" placeholder="Jūsų vardas" data-i18n-ph="form.name.ph" required autocomplete="name">
+            <label for="cf-name" class="cform__label mono-xs">Name<span aria-hidden="true"> *</span></label>
+            <input type="text" id="cf-name" name="name" class="cform__input" placeholder="Your name" required aria-required="true" aria-invalid="false" aria-describedby="cf-name-error" autocomplete="name">
             <div class="cform__underline"></div>
+            <span class="cform__error mono-xs" id="cf-name-error" aria-live="polite"></span>
           </div>
 
           <div class="cform__field">
-            <label for="cf-email" class="cform__label mono-xs" data-i18n="form.email.label">El. paštas</label>
-            <input type="email" id="cf-email" name="email" class="cform__input" placeholder="jusu@paštas.lt" data-i18n-ph="form.email.ph" required autocomplete="email">
+            <label for="cf-email" class="cform__label mono-xs">Email<span aria-hidden="true"> *</span></label>
+            <input type="email" id="cf-email" name="email" class="cform__input" placeholder="your@email.com" required aria-required="true" aria-invalid="false" aria-describedby="cf-email-error" autocomplete="email">
             <div class="cform__underline"></div>
+            <span class="cform__error mono-xs" id="cf-email-error" aria-live="polite"></span>
           </div>
 
           <div class="cform__field">
-            <label for="cf-message" class="cform__label mono-xs" data-i18n="form.message.label">Žinutė</label>
-            <textarea id="cf-message" name="message" class="cform__input cform__textarea" placeholder="Papasakokite apie savo projektą..." data-i18n-ph="form.message.ph" rows="4" required></textarea>
+            <label for="cf-message" class="cform__label mono-xs">Message<span aria-hidden="true"> *</span></label>
+            <textarea id="cf-message" name="message" class="cform__input cform__textarea" placeholder="Tell us about your project..." rows="4" required aria-required="true" aria-invalid="false" aria-describedby="cf-message-error"></textarea>
             <div class="cform__underline"></div>
+            <span class="cform__error mono-xs" id="cf-message-error" aria-live="polite"></span>
           </div>
 
           <button type="submit" class="cform__submit" id="cf-submit">
-            <span class="cform__submit-text" data-i18n="form.submit">Siųsti žinutę</span>
+            <span class="cform__submit-text">Send message</span>
             <span class="cform__submit-loading" aria-hidden="true">
               <svg class="cform__spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="31.4 31.4" stroke-linecap="round"/></svg>
-              <span data-i18n="form.sending">Siunčiama...</span>
+              <span>Sending...</span>
             </span>
-            <span class="cform__submit-arrow">→</span>
+            <span class="cform__submit-arrow" aria-hidden="true">→</span>
           </button>
 
           <div id="cf-captcha" class="cform__captcha" hidden>
             <div id="cf-captcha-widget"></div>
           </div>
 
-          <div id="cf-status" class="cform__status" role="alert" aria-live="polite"></div>
+          <div id="cf-status" class="cform__status" role="alert" aria-live="polite" tabindex="-1"></div>
         </form>
+
+        <noscript>
+          <p style="color: #f0efe9; margin-top: 2rem;">JavaScript is required for the contact form. Please email us directly at <a href="mailto:info@1012.lt" style="color: #c8ff00;">info@1012.lt</a></p>
+        </noscript>
       </div>
     </section>
 
@@ -426,12 +691,18 @@
     <div class="site-footer__inner">
       <div class="site-footer__brand">
         <span class="site-footer__logo"><span class="topbar__logo-num">1012</span><span class="topbar__logo-dot">.lt</span></span>
-        <span class="site-footer__copy mono-xs" data-i18n="footer.copy">&copy; 2026 Visos teisės saugomos.</span>
+        <span class="site-footer__copy mono-xs">&copy; 2026 All rights reserved.</span>
       </div>
-      <a href="mailto:info@1012.lt" class="site-footer__email mono-xs">info@1012.lt</a>
+      <div class="site-footer__right">
+        <a href="#contact" class="site-footer__cta">Start a project</a>
+        <a href="mailto:info@1012.lt" class="site-footer__email mono-xs">info@1012.lt</a>
+        <button class="site-footer__cookie-btn" id="cookie-settings">Cookie settings</button>
+      </div>
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="critical.js"></script>
+  <script src="non-critical.js" defer></script>
+  <script src="consent.js" defer></script>
 </body>
 </html>
