@@ -1420,7 +1420,7 @@ a.service-row {
   }
 }
 
-/* Select dropdown */
+/* Native select (hidden when custom dropdown present) */
 .cform__select-wrap {
   position: relative;
 }
@@ -1454,6 +1454,215 @@ a.service-row {
 
 .cform__select:focus ~ .cform__select-arrow {
   color: var(--accent);
+}
+
+/* ── Custom Dropdown (.cdrop) ──────────────── */
+.cdrop {
+  position: relative;
+}
+
+.cdrop__trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  font: inherit;
+  font-size: var(--f-body);
+  color: var(--fg);
+  background: transparent;
+  border: none;
+  padding: 0.75rem 0;
+  cursor: pointer;
+  outline: none;
+  text-align: left;
+  transition: color 0.3s;
+}
+
+.cdrop__trigger-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.25s, transform 0.25s var(--ease-out-expo);
+}
+
+.cdrop.has-value .cdrop__trigger-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.cdrop__label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cdrop__placeholder {
+  color: #8a8a82;
+}
+
+.cdrop__chevron {
+  flex-shrink: 0;
+  color: var(--fg-muted);
+  transition: transform 0.3s var(--ease-out-expo), color 0.3s;
+}
+
+.cdrop.is-open .cdrop__chevron {
+  transform: rotate(180deg);
+  color: var(--accent);
+}
+
+/* Underline mirroring the cform__underline style */
+.cdrop__underline {
+  height: 1px;
+  background: var(--fg-dim);
+  position: relative;
+}
+
+.cdrop__underline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: width 0.4s var(--ease-out-expo);
+}
+
+.cdrop.is-open .cdrop__underline::after,
+.cdrop__trigger:focus-visible ~ .cdrop__underline::after {
+  width: 100%;
+}
+
+.cdrop.is-error .cdrop__underline {
+  background: var(--error);
+}
+
+.cdrop.is-error .cdrop__underline::after {
+  background: var(--error);
+  width: 100%;
+}
+
+/* Dropdown panel */
+.cdrop__panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: var(--bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5),
+              0 0 0 1px rgba(255, 255, 255, 0.04);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.2s, transform 0.25s var(--ease-out-expo), visibility 0s 0.25s;
+  max-height: 280px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--fg-dim) transparent;
+}
+
+.cdrop.is-open .cdrop__panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+/* Individual option */
+.cdrop__option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--fg-muted);
+  font-size: var(--f-body);
+  transition: background 0.15s, color 0.15s;
+  user-select: none;
+}
+
+.cdrop__option:hover,
+.cdrop__option.is-focused {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--fg);
+}
+
+.cdrop__option.is-selected {
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.cdrop__option.is-selected:hover,
+.cdrop__option.is-selected.is-focused {
+  background: rgba(200, 255, 0, 0.18);
+}
+
+.cdrop__opt-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cdrop__opt-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.cdrop__opt-label {
+  flex: 1;
+}
+
+.cdrop__opt-check {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  color: var(--accent);
+  transition: opacity 0.15s;
+}
+
+.cdrop__option.is-selected .cdrop__opt-check {
+  opacity: 1;
+}
+
+/* Focus ring on trigger */
+.cdrop__trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* Hide native select when custom dropdown is active */
+.cdrop + .cform__select-wrap,
+.cdrop + .cform__underline + .cform__select-wrap {
+  display: none;
+}
+
+select.cdrop-native-select {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
 
 /* Checkbox / Agreement */
@@ -1595,6 +1804,11 @@ a.service-row {
 
 .topbar__link--active {
   color: var(--accent);
+}
+
+.topbar__link--active::after {
+  width: 100%;
+  background: var(--accent);
 }
 
 /* ── SERVICE PAGES ─────────────────────────── */

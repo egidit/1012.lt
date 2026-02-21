@@ -231,7 +231,10 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
       navLinks.forEach(link => {
         const href = link.getAttribute('href');
-        link.classList.toggle('is-active', href === '#' + activeId);
+        const isMatch = href === '#' + activeId ||
+          href === '/#' + activeId ||
+          (activeId === 'contact' && (href === '/start-project' || href === '/start-project.html'));
+        link.classList.toggle('is-active', isMatch);
       });
     }, 80), { passive: true });
 
@@ -292,6 +295,20 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
           document.body.style.overflow = '';
         });
       });
+
+      // Auto-close mobile menu when resizing back to desktop
+      var mql = window.matchMedia('(min-width: 901px)');
+      function closeOnDesktop(e) {
+        if (e.matches && burger.classList.contains('open')) {
+          burger.classList.remove('open');
+          menu.classList.remove('open');
+          menu.setAttribute('aria-hidden', 'true');
+          burger.setAttribute('aria-expanded', 'false');
+          burger.setAttribute('aria-label', 'Open menu');
+          document.body.style.overflow = '';
+        }
+      }
+      mql.addEventListener('change', closeOnDesktop);
     }
   }
 
@@ -594,7 +611,183 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   }
 
   /* ------------------------------------------------
-     4b. Inquiry Form (start-project page)
+     4b. Custom Dropdowns (.cdrop)
+  ------------------------------------------------ */
+  function initCustomDropdowns() {
+    var drops = document.querySelectorAll('.cdrop[data-for]');
+    if (!drops.length) return;
+
+    drops.forEach(function (drop) {
+      var selectId = drop.getAttribute('data-for');
+      var nativeSelect = document.getElementById(selectId);
+      if (!nativeSelect) return;
+
+      var trigger = drop.querySelector('.cdrop__trigger');
+      var panel = drop.querySelector('.cdrop__panel');
+      var labelEl = drop.querySelector('.cdrop__label');
+      var iconEl = drop.querySelector('.cdrop__trigger-icon');
+      var options = drop.querySelectorAll('.cdrop__option');
+      var placeholder = labelEl ? labelEl.textContent : '';
+      var focusedIdx = -1;
+
+      function open() {
+        drop.classList.add('is-open');
+        trigger.setAttribute('aria-expanded', 'true');
+        // Highlight the currently selected option
+        var curVal = nativeSelect.value;
+        options.forEach(function (opt, i) {
+          var match = opt.getAttribute('data-value') === curVal;
+          opt.classList.toggle('is-focused', match);
+          if (match) focusedIdx = i;
+        });
+        // Ensure panel is visible for scrollIntoView
+        if (focusedIdx > -1 && options[focusedIdx]) {
+          options[focusedIdx].scrollIntoView({ block: 'nearest' });
+        }
+      }
+
+      function close() {
+        drop.classList.remove('is-open');
+        trigger.setAttribute('aria-expanded', 'false');
+        focusedIdx = -1;
+        clearFocus();
+      }
+
+      function clearFocus() {
+        options.forEach(function (o) { o.classList.remove('is-focused'); });
+      }
+
+      function focusOption(idx) {
+        if (idx < 0) idx = options.length - 1;
+        if (idx >= options.length) idx = 0;
+        clearFocus();
+        focusedIdx = idx;
+        options[idx].classList.add('is-focused');
+        options[idx].scrollIntoView({ block: 'nearest' });
+      }
+
+      function selectOption(opt) {
+        var val = opt.getAttribute('data-value');
+        var text = opt.querySelector('.cdrop__opt-label').textContent;
+        var optIcon = opt.querySelector('.cdrop__opt-icon');
+
+        // Update native select
+        nativeSelect.value = val;
+        nativeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+
+        // Update trigger label
+        if (labelEl) {
+          labelEl.textContent = text;
+          labelEl.classList.remove('cdrop__placeholder');
+        }
+
+        // Update trigger icon (copy from option if exists)
+        if (iconEl && optIcon) {
+          iconEl.innerHTML = optIcon.innerHTML;
+          drop.classList.add('has-value');
+        }
+
+        // Mark selected
+        options.forEach(function (o) { o.classList.remove('is-selected'); });
+        opt.classList.add('is-selected');
+
+        // Clear error state
+        drop.classList.remove('is-error');
+
+        close();
+        trigger.focus();
+      }
+
+      // Toggle on click
+      trigger.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (drop.classList.contains('is-open')) {
+          close();
+        } else {
+          // Close all other dropdowns first
+          document.querySelectorAll('.cdrop.is-open').forEach(function (d) {
+            if (d !== drop) {
+              d.classList.remove('is-open');
+              d.querySelector('.cdrop__trigger').setAttribute('aria-expanded', 'false');
+            }
+          });
+          open();
+        }
+      });
+
+      // Option click
+      options.forEach(function (opt) {
+        opt.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          selectOption(opt);
+        });
+      });
+
+      // Keyboard navigation
+      trigger.addEventListener('keydown', function (e) {
+        var key = e.key;
+        var isOpen = drop.classList.contains('is-open');
+
+        if (key === 'Escape') {
+          close();
+          return;
+        }
+
+        if (!isOpen && (key === 'Enter' || key === ' ' || key === 'ArrowDown' || key === 'ArrowUp')) {
+          e.preventDefault();
+          open();
+          if (focusedIdx < 0) focusOption(0);
+          return;
+        }
+
+        if (isOpen) {
+          if (key === 'ArrowDown') {
+            e.preventDefault();
+            focusOption(focusedIdx + 1);
+          } else if (key === 'ArrowUp') {
+            e.preventDefault();
+            focusOption(focusedIdx - 1);
+          } else if (key === 'Enter' || key === ' ') {
+            e.preventDefault();
+            if (focusedIdx >= 0 && options[focusedIdx]) {
+              selectOption(options[focusedIdx]);
+            }
+          } else if (key === 'Tab') {
+            close();
+          }
+        }
+      });
+
+      // Close on outside click
+      document.addEventListener('click', function (e) {
+        if (!drop.contains(e.target)) {
+          close();
+        }
+      });
+
+      // Sync: if native select resets (form.reset()), also reset the custom dropdown
+      nativeSelect.addEventListener('_cdrop_reset', function () {
+        if (labelEl) {
+          labelEl.textContent = placeholder;
+          labelEl.classList.add('cdrop__placeholder');
+        }
+        if (iconEl) {
+          iconEl.innerHTML = '';
+          drop.classList.remove('has-value');
+        }
+        options.forEach(function (o) { o.classList.remove('is-selected'); });
+        drop.classList.remove('is-error');
+      });
+
+      // Store reference for external access
+      drop._selectOption = selectOption;
+      drop._close = close;
+    });
+  }
+
+  /* ------------------------------------------------
+     4c. Inquiry Form (start-project page)
   ------------------------------------------------ */
   function initInquiryForm() {
     const SUPABASE_FUNCTION_URL =
@@ -654,9 +847,20 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
       }
     }
 
+    function syncCdropError(input, add) {
+      var cdrop = input.closest ? input.closest('.cform__field') : null;
+      if (cdrop) {
+        var dropEl = cdrop.querySelector('.cdrop[data-for]');
+        if (dropEl) dropEl.classList.toggle('is-error', add);
+      }
+    }
+
     function clearFieldErrors() {
       form.querySelectorAll('.is-error').forEach(el => el.classList.remove('is-error'));
-      [nameInput, emailInput, serviceInput, msgInput].forEach(el => el.setAttribute('aria-invalid', 'false'));
+      [nameInput, emailInput, serviceInput, msgInput].forEach(el => {
+        el.setAttribute('aria-invalid', 'false');
+        syncCdropError(el, false);
+      });
       [nameError, emailError, serviceError, msgError, agreeError].forEach(el => { if (el) el.textContent = ''; });
       if (agreeInput) agreeInput.classList.remove('is-error');
     }
@@ -665,6 +869,7 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
       input.classList.add('is-error');
       input.setAttribute('aria-invalid', 'true');
       if (errorEl) errorEl.textContent = msg;
+      syncCdropError(input, true);
     }
 
     function validateField(input, errorEl) {
@@ -687,6 +892,7 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
       input.classList.remove('is-error');
       input.setAttribute('aria-invalid', 'false');
       if (errorEl) errorEl.textContent = '';
+      syncCdropError(input, false);
       return true;
     }
 
@@ -797,7 +1003,16 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
       if (!valid) {
         setStatus('error', 'Please fill in all required fields.');
-        if (firstInvalid) firstInvalid.focus();
+        if (firstInvalid) {
+          // If invalid field is a hidden select with custom dropdown, focus the trigger instead
+          var cdropWrap = firstInvalid.closest ? firstInvalid.closest('.cform__field') : null;
+          var cdropTrigger = cdropWrap ? cdropWrap.querySelector('.cdrop__trigger') : null;
+          if (firstInvalid.classList.contains('cdrop-native-select') && cdropTrigger) {
+            cdropTrigger.focus();
+          } else {
+            firstInvalid.focus();
+          }
+        }
         return;
       }
 
@@ -851,6 +1066,10 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
         if (res.ok && data.success) {
           setStatus('success', 'Thank you! Your inquiry has been submitted. We\'ll respond within 24 hours with a tailored scope and estimate.');
           form.reset();
+          // Reset custom dropdowns
+          [serviceInput, budgetInput, timelineInput, referralInput].forEach(function (sel) {
+            sel.dispatchEvent(new Event('_cdrop_reset'));
+          });
           captchaToken = null;
           hideCaptcha();
           updateSubmitState();
@@ -948,6 +1167,7 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     initSmooth();
     initScrollProgress();
     initContactForm();
+    initCustomDropdowns();
     initInquiryForm();
     initFAQ();
     initScrollDepthTracking();
