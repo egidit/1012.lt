@@ -1082,7 +1082,6 @@ a.service-row {
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--fg-dim);
-  max-width: 820px;
 }
 
 .faq-item {
